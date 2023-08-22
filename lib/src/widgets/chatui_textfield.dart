@@ -33,15 +33,16 @@ import '../utils/debounce.dart';
 import '../utils/package_strings.dart';
 
 class ChatUITextField extends StatefulWidget {
-  const ChatUITextField({
-    Key? key,
-    this.sendMessageConfig,
-    required this.focusNode,
-    required this.textEditingController,
-    required this.onPressed,
-    required this.onRecordingComplete,
-    required this.onImageSelected,
-  }) : super(key: key);
+  const ChatUITextField(
+      {Key? key,
+      this.sendMessageConfig,
+      required this.focusNode,
+      required this.textEditingController,
+      required this.onPressed,
+      required this.onRecordingComplete,
+      required this.onImageSelected,
+      this.canNotSend = false})
+      : super(key: key);
 
   /// Provides configuration of default text field in chat.
   final SendMessageConfiguration? sendMessageConfig;
@@ -60,6 +61,8 @@ class ChatUITextField extends StatefulWidget {
 
   /// Provides callback when user select images from camera/gallery.
   final StringsCallBack onImageSelected;
+
+  final bool canNotSend;
 
   @override
   State<ChatUITextField> createState() => _ChatUITextFieldState();
@@ -208,12 +211,25 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
                     return IconButton(
                       color: sendMessageConfig?.defaultSendButtonColor ??
                           Colors.green,
-                      onPressed: () {
-                        widget.onPressed();
-                        _inputText.value = '';
-                      },
-                      icon: sendMessageConfig?.sendButtonIcon ??
-                          const Icon(Icons.send),
+                      onPressed: widget.canNotSend
+                          ? null
+                          : () {
+                              widget.onPressed();
+                              _inputText.value = '';
+                            },
+                      icon: widget.canNotSend
+                          ? SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 3,
+                                color:
+                                    sendMessageConfig?.defaultSendButtonColor ??
+                                        Colors.green,
+                              ),
+                            )
+                          : sendMessageConfig?.sendButtonIcon ??
+                              const Icon(Icons.send),
                     );
                   } else {
                     return Row(

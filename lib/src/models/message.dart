@@ -54,6 +54,7 @@ class Message {
   /// Provides max duration for recorded voice message.
   Duration? voiceMessageDuration;
 
+
   Message({
     this.id = '',
     required this.message,
@@ -68,11 +69,11 @@ class Message {
         key = GlobalKey(),
         _status = ValueNotifier(status),
         assert(
-          (messageType.isVoice
-              ? ((defaultTargetPlatform == TargetPlatform.iOS ||
-                  defaultTargetPlatform == TargetPlatform.android))
-              : true),
-          "Voice messages are only supported with android and ios platform",
+        (messageType.isVoice
+            ? ((defaultTargetPlatform == TargetPlatform.iOS ||
+            defaultTargetPlatform == TargetPlatform.android))
+            : true),
+        "Voice messages are only supported with android and ios platform",
         );
 
   /// curret messageStatus
@@ -90,26 +91,4 @@ class Message {
     _status.value = messageStatus;
   }
 
-  factory Message.fromJson(Map<String, dynamic> json) => Message(
-      id: json["id"],
-      message: json["message"],
-      createdAt: json["createdAt"],
-      sendBy: json["sendBy"],
-      replyMessage: ReplyMessage.fromJson(json["reply_message"]),
-      reaction: Reaction.fromJson(json["reaction"]),
-      messageType: json["message_type"],
-      voiceMessageDuration: json["voice_message_duration"],
-      status: json['status']);
-
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'message': message,
-        'createdAt': createdAt,
-        'sendBy': sendBy,
-        'reply_message': replyMessage.toJson(),
-        'reaction': reaction.toJson(),
-        'message_type': messageType,
-        'voice_message_duration': voiceMessageDuration,
-        'status': status.name
-      };
 }

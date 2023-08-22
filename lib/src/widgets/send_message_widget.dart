@@ -231,6 +231,7 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
                           sendMessageConfig: widget.sendMessageConfig,
                           onRecordingComplete: _onRecordingComplete,
                           onImageSelected: _onImageSelected,
+                          canNotSend: !(widget.sendMessageConfig?.canSendMessage ?? true),
                         )
                       ],
                     ),

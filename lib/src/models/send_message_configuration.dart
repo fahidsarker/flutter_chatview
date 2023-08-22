@@ -44,6 +44,8 @@ class SendMessageConfiguration {
   /// Used to give color to reply message.
   final Color? replyMessageColor;
 
+  final bool canSendMessage;
+
   /// Used to give color to close icon in reply pop-up.
   final Color? closeIconColor;
 
@@ -79,6 +81,7 @@ class SendMessageConfiguration {
     this.allowRecordingVoice = true,
     this.voiceRecordingConfiguration,
     this.micIconColor,
+    this.canSendMessage = true
   });
 }
 
