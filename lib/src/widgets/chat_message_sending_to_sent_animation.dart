@@ -22,18 +22,23 @@ class _SendingMessageAnimatingWidgetState
 
   _attachOnStatusChangeListeners() {
     if (isSent) {
-      Future.delayed(const Duration(milliseconds: 400), () {
+      // Future.delayed(const Duration(milliseconds: 400), () {
         isVisible = true;
         if (mounted) {
           setState(() {});
         }
-      });
+      // });
     }
   }
 
   @override
-  Widget build(BuildContext context) {
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _attachOnStatusChangeListeners();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return AnimatedPadding(
       curve: Curves.easeInOutExpo,
       duration: const Duration(seconds: 1),

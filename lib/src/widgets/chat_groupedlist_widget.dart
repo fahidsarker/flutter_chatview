@@ -302,7 +302,7 @@ class _ChatGroupedListWidgetState extends State<ChatGroupedListWidget>
                     valueListenable: _replyId,
                     builder: (context, state, child) {
                       return ChatBubbleWidget(
-                        key: message.key,
+                        key: ValueKey(message.uniqueSignature),
                         messageTimeTextStyle:
                             chatBackgroundConfig.messageTimeTextStyle,
                         messageTimeIconColor:

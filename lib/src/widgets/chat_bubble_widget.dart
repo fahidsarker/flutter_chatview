@@ -33,7 +33,7 @@ import 'swipe_to_reply.dart';
 
 class ChatBubbleWidget extends StatefulWidget {
   const ChatBubbleWidget({
-    required GlobalKey key,
+    required Key key,
     required this.message,
     required this.onLongPress,
     required this.slideAnimation,
@@ -98,6 +98,7 @@ class ChatBubbleWidget extends StatefulWidget {
 
 class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
   String get replyMessage => widget.message.replyMessage.message;
+
   String get replyMessageAsset => widget.message.replyMessage.assetUrl;
 
   bool get isMessageBySender => widget.message.sendBy == currentUser?.id;
@@ -252,37 +253,27 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
             ?.receiptsWidgetConfig?.showReceiptsIn ??
         ShowReceiptsIn.lastMessage;
     if (showReceipts == ShowReceiptsIn.all) {
-      return ValueListenableBuilder(
-        valueListenable: widget.message.statusNotifier,
-        builder: (context, value, child) {
-          if (ChatViewInheritedWidget.of(context)
-                  ?.featureActiveConfig
-                  .receiptsBuilderVisibility ??
-              true) {
-            return widget.chatBubbleConfig?.outgoingChatBubbleConfig
-                    ?.receiptsWidgetConfig?.receiptsBuilder
-                    ?.call(value) ??
-                sendMessageAnimationBuilder(value);
-          }
-          return const SizedBox();
-        },
-      );
+      if (ChatViewInheritedWidget.of(context)
+              ?.featureActiveConfig
+              .receiptsBuilderVisibility ??
+          true) {
+        return widget.chatBubbleConfig?.outgoingChatBubbleConfig
+                ?.receiptsWidgetConfig?.receiptsBuilder
+                ?.call(widget.message.status) ??
+            sendMessageAnimationBuilder(widget.message.status);
+      }
+      return const SizedBox();
     } else if (showReceipts == ShowReceiptsIn.lastMessage && isLastMessage) {
-      return ValueListenableBuilder(
-          valueListenable:
-              chatController!.initialMessageList.last.statusNotifier,
-          builder: (context, value, child) {
-            if (ChatViewInheritedWidget.of(context)
-                    ?.featureActiveConfig
-                    .receiptsBuilderVisibility ??
-                true) {
-              return widget.chatBubbleConfig?.outgoingChatBubbleConfig
-                      ?.receiptsWidgetConfig?.receiptsBuilder
-                      ?.call(value) ??
-                  sendMessageAnimationBuilder(value);
-            }
-            return sendMessageAnimationBuilder(value);
-          });
+      if (ChatViewInheritedWidget.of(context)
+              ?.featureActiveConfig
+              .receiptsBuilderVisibility ??
+          true) {
+        return widget.chatBubbleConfig?.outgoingChatBubbleConfig
+                ?.receiptsWidgetConfig?.receiptsBuilder
+                ?.call(widget.message.status) ??
+            sendMessageAnimationBuilder(widget.message.status);
+      }
+      return sendMessageAnimationBuilder(widget.message.status);
     }
     return const SizedBox();
   }

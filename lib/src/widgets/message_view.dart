@@ -238,31 +238,24 @@ class _MessageViewState extends State<MessageView>
                 }
               }()) ??
               const SizedBox(),
-          ValueListenableBuilder(
-            valueListenable: widget.message.statusNotifier,
-            builder: (context, value, child) {
-              if (widget.isMessageBySender &&
-                  widget.controller?.initialMessageList.last.id ==
-                      widget.message.id &&
-                  widget.message.status == MessageStatus.read) {
-                if (ChatViewInheritedWidget.of(context)
-                        ?.featureActiveConfig
-                        .lastSeenAgoBuilderVisibility ??
-                    true) {
-                  return widget.outgoingChatBubbleConfig?.receiptsWidgetConfig
-                          ?.lastSeenAgoBuilder
-                          ?.call(
-                              widget.message,
-                              applicationDateFormatter(
-                                  widget.message.createdAt)) ??
-                      lastSeenAgoBuilder(widget.message,
-                          applicationDateFormatter(widget.message.createdAt));
-                }
-                return const SizedBox();
-              }
-              return const SizedBox();
-            },
-          )
+          if (widget.isMessageBySender &&
+              widget.controller?.initialMessageList.last.id ==
+                  widget.message.id &&
+              widget.message.status == MessageStatus.read)
+            if (ChatViewInheritedWidget.of(context)
+                    ?.featureActiveConfig
+                    .lastSeenAgoBuilderVisibility ??
+                true)
+              widget.outgoingChatBubbleConfig?.receiptsWidgetConfig
+                      ?.lastSeenAgoBuilder
+                      ?.call(widget.message,
+                          applicationDateFormatter(widget.message.createdAt)) ??
+                  lastSeenAgoBuilder(widget.message,
+                      applicationDateFormatter(widget.message.createdAt))
+            else
+              const SizedBox()
+          else
+            const SizedBox()
         ],
       ),
     );
