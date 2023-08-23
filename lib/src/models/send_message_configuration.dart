@@ -184,14 +184,14 @@ class ImagePickerConfiguration {
 
   /// Callback when image is picked from camera or gallery,
   ///  we can perform our task on image like adding crop options and return new image path
-  final Future<String?> Function(String? path)? onImagePicked;
+  final Future<String?> Function(String? path)? onMediaPicked;
 
   const ImagePickerConfiguration({
     this.maxWidth,
     this.maxHeight,
     this.imageQuality,
     this.preferredCameraDevice,
-    this.onImagePicked,
+    this.onMediaPicked,
   });
 }
 

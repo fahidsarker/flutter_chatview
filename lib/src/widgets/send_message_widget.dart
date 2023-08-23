@@ -132,7 +132,8 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
                       children: [
                         ValueListenableBuilder<ReplyMessage>(
                           builder: (_, state, child) {
-                            if (state.message.isNotEmpty || state.assetUrl.isNotEmpty) {
+                            if (state.message.isNotEmpty ||
+                                state.assetUrl.isNotEmpty) {
                               return Container(
                                 decoration: BoxDecoration(
                                   color: widget.sendMessageConfig
@@ -202,6 +203,8 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
                                         _voiceReplyMessageView
                                       else if (state.messageType.isImage)
                                         _imageReplyMessageView
+                                      else if (state.messageType.isVideo)
+                                        _videoReplyMessageView
                                       else
                                         Text(
                                           state.message,
@@ -230,8 +233,10 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
                           onPressed: _onPressed,
                           sendMessageConfig: widget.sendMessageConfig,
                           onRecordingComplete: _onRecordingComplete,
-                          onImageSelected: _onImageSelected,
-                          canNotSend: !(widget.sendMessageConfig?.canSendMessage ?? true),
+                          onMediaSelected: _onMediaSelectedSelected,
+                          canNotSend:
+                              !(widget.sendMessageConfig?.canSendMessage ??
+                                  true),
                         )
                       ],
                     ),
@@ -282,6 +287,25 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
     );
   }
 
+  Widget get _videoReplyMessageView {
+    return Row(
+      children: [
+        Icon(
+          Icons.movie,
+          size: 20,
+          color: widget.sendMessageConfig?.replyMessageColor ??
+              Colors.grey.shade700,
+        ),
+        Text(
+          PackageStrings.video,
+          style: TextStyle(
+            color: widget.sendMessageConfig?.replyMessageColor ?? Colors.black,
+          ),
+        ),
+      ],
+    );
+  }
+
   void _onRecordingComplete(String? path) {
     if (path != null) {
       widget.onSendTap.call(path, replyMessage, MessageType.voice);
@@ -289,10 +313,19 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
     }
   }
 
-  void _onImageSelected(String imagePath, String error) {
+  // void _onImageSelected(String imagePath, String error) {
+  //   debugPrint('Call in Send Message Widget');
+  //   if (imagePath.isNotEmpty) {
+  //     widget.onSendTap.call(imagePath, replyMessage, MessageType.image);
+  //     _assignRepliedMessage();
+  //   }
+  // }
+
+  void _onMediaSelectedSelected(String path, String error, MessageType type) {
     debugPrint('Call in Send Message Widget');
-    if (imagePath.isNotEmpty) {
-      widget.onSendTap.call(imagePath, replyMessage, MessageType.image);
+    print(path);
+    if (path.isNotEmpty) {
+      widget.onSendTap.call(path, replyMessage, type);
       _assignRepliedMessage();
     }
   }

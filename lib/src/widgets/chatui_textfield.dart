@@ -40,7 +40,7 @@ class ChatUITextField extends StatefulWidget {
       required this.textEditingController,
       required this.onPressed,
       required this.onRecordingComplete,
-      required this.onImageSelected,
+      required this.onMediaSelected,
       this.canNotSend = false})
       : super(key: key);
 
@@ -60,7 +60,7 @@ class ChatUITextField extends StatefulWidget {
   final Function(String?) onRecordingComplete;
 
   /// Provides callback when user select images from camera/gallery.
-  final StringsCallBack onImageSelected;
+  final Function(String path, String error, MessageType type) onMediaSelected;
 
   final bool canNotSend;
 
@@ -238,7 +238,6 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
                           IconButton(
                             constraints: const BoxConstraints(),
                             onPressed: () => _onIconPressed(
-                              ImageSource.camera,
                               config: widget
                                   .sendMessageConfig?.imagePickerConfiguration,
                             ),
@@ -253,18 +252,33 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
                           IconButton(
                             constraints: const BoxConstraints(),
                             onPressed: () => _onIconPressed(
-                              ImageSource.gallery,
+                              chooseVideo: true,
                               config: widget
                                   .sendMessageConfig?.imagePickerConfiguration,
                             ),
-                            icon: imagePickerIconsConfig
-                                    ?.galleryImagePickerIcon ??
-                                Icon(
-                                  Icons.image,
-                                  color:
-                                      imagePickerIconsConfig?.galleryIconColor,
-                                ),
+                            icon:
+                                imagePickerIconsConfig?.cameraImagePickerIcon ??
+                                    Icon(
+                                      Icons.video_camera_back_outlined,
+                                      color: imagePickerIconsConfig
+                                          ?.cameraIconColor,
+                                    ),
                           ),
+                          // IconButton(
+                          //   constraints: const BoxConstraints(),
+                          //   onPressed: () => _onIconPressed(
+                          //     chooseMedia: true,
+                          //     config: widget
+                          //         .sendMessageConfig?.imagePickerConfiguration,
+                          //   ),
+                          //   icon: imagePickerIconsConfig
+                          //           ?.galleryImagePickerIcon ??
+                          //       Icon(
+                          //         Icons.image,
+                          //         color:
+                          //             imagePickerIconsConfig?.galleryIconColor,
+                          //       ),
+                          // ),
                         ],
                         if (widget.sendMessageConfig?.allowRecordingVoice ??
                             true &&
@@ -307,27 +321,80 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
     }
   }
 
-  void _onIconPressed(
-    ImageSource imageSource, {
+
+  Future<ImageSource?> _pickImageSource () async {
+    return await showModalBottomSheet(context: context, builder: (_) {
+      return Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: Icon(Icons.camera_alt_outlined),
+              title: Text('Camera'),
+              onTap: () => Navigator.pop(context, ImageSource.camera),
+            ),
+            ListTile(
+              leading: Icon(Icons.image),
+              title: Text('Gallery'),
+              onTap: () => Navigator.pop(context, ImageSource.gallery),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  void _onIconPressed({
     ImagePickerConfiguration? config,
+    bool chooseVideo = false,
   }) async {
     try {
-      final XFile? image = await _imagePicker.pickImage(
-        source: imageSource,
-        maxHeight: config?.maxHeight,
-        maxWidth: config?.maxWidth,
-        imageQuality: config?.imageQuality,
-        preferredCameraDevice:
-            config?.preferredCameraDevice ?? CameraDevice.rear,
-      );
-      String? imagePath = image?.path;
-      if (config?.onImagePicked != null) {
-        String? updatedImagePath = await config?.onImagePicked!(imagePath);
+      XFile? image;
+
+      final source = await _pickImageSource();
+
+      print(source);
+
+      if (source == null){
+        return;
+      }
+
+      if (!chooseVideo) {
+        image = await _imagePicker.pickImage(
+          source: source,
+          maxHeight: config?.maxHeight,
+          maxWidth: config?.maxWidth,
+          imageQuality: config?.imageQuality,
+          preferredCameraDevice:
+              config?.preferredCameraDevice ?? CameraDevice.rear,
+          requestFullMetadata: true
+        );
+      }else if (chooseVideo) {
+        image = await _imagePicker.pickVideo(
+          source: source,
+          maxDuration: const Duration(minutes: 5),
+          preferredCameraDevice:
+              config?.preferredCameraDevice ?? CameraDevice.rear,
+
+        );
+      }
+
+      if (image == null){
+        return;
+      }
+
+      String? imagePath = image.path;
+      if (config?.onMediaPicked != null) {
+        String? updatedImagePath = await config?.onMediaPicked!(imagePath);
         if (updatedImagePath != null) imagePath = updatedImagePath;
       }
-      widget.onImageSelected(imagePath ?? '', '');
+      widget.onMediaSelected(imagePath ?? '', '', chooseVideo ? MessageType.video : MessageType.image);
     } catch (e) {
-      widget.onImageSelected('', e.toString());
+      widget.onMediaSelected('', e.toString(), MessageType.image);
     }
   }
 

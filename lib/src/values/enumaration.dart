@@ -24,6 +24,7 @@
 enum MessageType {
   image,
   text,
+  video,
 
   /// Only supported on android and ios
   voice,
