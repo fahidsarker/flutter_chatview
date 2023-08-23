@@ -67,7 +67,7 @@ class Message {
     this.messageType = MessageType.text,
     this.voiceMessageDuration,
     required MessageStatus status,
-  })  : reactions = reactions ?? Reactions([]),
+  })  : reactions = reactions ?? Reactions(id, []),
         key = GlobalKey(),
         _status = ValueNotifier(status),
         assert(

@@ -60,7 +60,8 @@ class ChatController {
     required this.initialMessageList,
     required this.scrollController,
     required this.chatUsers,
-    required this.onReactionSet
+    required this.onReactionSet,
+    required this.onRemoveReact
   });
 
   final Function(
@@ -68,6 +69,12 @@ class ChatController {
   String messageId,
   String userId,
   ) onReactionSet;
+
+  final Function(
+      String emoji,
+      String messageId,
+      String userId,
+      ) onRemoveReact;
 
   /// Represents message stream of chat
   StreamController<List<Message>> messageStreamController = StreamController();

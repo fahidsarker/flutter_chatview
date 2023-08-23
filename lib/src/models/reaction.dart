@@ -23,8 +23,9 @@
 
 class Reactions {
   final List<UserReaction> _reactions;
+  final String messageID;
 
-  Reactions(this._reactions);
+  Reactions(this.messageID, this._reactions);
 
   Map<String, dynamic> get json {
     return {
@@ -32,7 +33,7 @@ class Reactions {
     };
   }
 
-  Reactions.fromJson(Map<String, dynamic> json)
+  Reactions.fromJson(this.messageID, Map<String, dynamic> json)
       : _reactions = json.entries
       .map((e) => UserReaction(e.key, (e.value as List<dynamic>).cast<String>()))
       .toList();
