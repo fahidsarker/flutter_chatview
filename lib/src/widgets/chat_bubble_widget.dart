@@ -168,7 +168,7 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
           if (!isMessageBySender &&
               (featureActiveConfig?.enableOtherUserProfileAvatar ?? true))
             ProfileCircle(
-              bottomPadding: widget.message.reaction.reactions.isNotEmpty
+              bottomPadding: widget.message.reactions.reactions.isNotEmpty
                   ? profileCircleConfig?.bottomPadding ?? 15
                   : profileCircleConfig?.bottomPadding ?? 2,
               profileCirclePadding: profileCircleConfig?.padding,
@@ -227,7 +227,7 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
           if (isMessageBySender &&
               (featureActiveConfig?.enableCurrentUserProfileAvatar ?? true))
             ProfileCircle(
-              bottomPadding: widget.message.reaction.reactions.isNotEmpty
+              bottomPadding: widget.message.reactions.reactions.isNotEmpty
                   ? profileCircleConfig?.bottomPadding ?? 15
                   : profileCircleConfig?.bottomPadding ?? 2,
               profileCirclePadding: profileCircleConfig?.padding,

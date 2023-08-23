@@ -8,7 +8,7 @@ class ReactionsBottomSheet {
     required BuildContext context,
 
     /// Provides reaction instance of message.
-    required Reaction reaction,
+    required Reactions reaction,
 
     /// Provides controller for accessing few function for running chat.
     required ChatController chatController,
@@ -29,10 +29,9 @@ class ReactionsBottomSheet {
                   left: 12,
                   top: 18,
                 ),
-            itemCount: reaction.reactedUserIds.length,
+            itemCount: reaction.reactions.length,
             itemBuilder: (_, index) {
-              final reactedUser =
-                  chatController.getUserFromId(reaction.reactedUserIds[index]);
+              final reactedUser = chatController.getUserFromId(reaction.reactions[index].userID);
               return Container(
                 margin: reactionsBottomSheetConfig?.reactionWidgetMargin ??
                     const EdgeInsets.only(bottom: 8),
@@ -74,7 +73,7 @@ class ReactionsBottomSheet {
                       ),
                     ),
                     Text(
-                      reaction.reactions[index],
+                      reaction.reactions[index].reaction,
                       style: TextStyle(
                         fontSize:
                             reactionsBottomSheetConfig?.reactionSize ?? 14,

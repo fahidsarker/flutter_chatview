@@ -35,7 +35,7 @@ class ReactionWidget extends StatefulWidget {
   }) : super(key: key);
 
   /// Provides reaction instance of message.
-  final Reaction reaction;
+  final Reactions reaction;
 
   /// Provides configuration of reaction appearance in chat bubble.
   final MessageReactionConfiguration? messageReactionConfig;
@@ -109,12 +109,12 @@ class _ReactionWidgetState extends State<ReactionWidget> {
                   ),
                 ),
                 if ((chatController?.chatUsers.length ?? 0) > 1) ...[
-                  if (!(widget.reaction.reactedUserIds.length > 3) &&
+                  if (!(widget.reaction.reactionCount > 3) &&
                       !(reactionsSet.length > 1))
                     ...List.generate(
-                      widget.reaction.reactedUserIds.length,
+                      widget.reaction.reactionCount,
                       (reactedUserIndex) => widget
-                          .reaction.reactedUserIds[reactedUserIndex]
+                          .reaction.reactions[reactedUserIndex].userID
                           .getUserProfilePicture(
                         getChatUser: (userId) =>
                             chatController?.getUserFromId(userId),
@@ -124,12 +124,12 @@ class _ReactionWidgetState extends State<ReactionWidget> {
                             messageReactionConfig?.profileCircleRadius,
                       ),
                     ),
-                  if (widget.reaction.reactedUserIds.length > 3 &&
+                  if (widget.reaction.reactionCount > 3 &&
                       !(reactionsSet.length > 1))
                     Padding(
                       padding: const EdgeInsets.only(left: 2),
                       child: Text(
-                        '+${widget.reaction.reactedUserIds.length}',
+                        '+${widget.reaction.reactionCount}',
                         style:
                             messageReactionConfig?.reactedUserCountTextStyle ??
                                 _reactionTextStyle,
@@ -139,7 +139,7 @@ class _ReactionWidgetState extends State<ReactionWidget> {
                     Padding(
                       padding: const EdgeInsets.only(left: 2),
                       child: Text(
-                        widget.reaction.reactedUserIds.length.toString(),
+                        widget.reaction.reactionCount.toString(),
                         style: messageReactionConfig?.reactionCountTextStyle ??
                             _reactionTextStyle,
                       ),

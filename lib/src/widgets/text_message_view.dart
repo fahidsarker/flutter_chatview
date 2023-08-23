@@ -83,7 +83,7 @@ class TextMessageView extends StatelessWidget {
               ),
           margin: _margin ??
               EdgeInsets.fromLTRB(
-                  5, 0, 6, message.reaction.reactions.isNotEmpty ? 15 : 2),
+                  5, 0, 6, message.reactions.reactions.isNotEmpty ? 15 : 2),
           decoration: BoxDecoration(
             color: highlightMessage ? highlightColor : _color,
             borderRadius: _borderRadius(textMessage),
@@ -102,11 +102,11 @@ class TextMessageView extends StatelessWidget {
                       ),
                 ),
         ),
-        if (message.reaction.reactions.isNotEmpty)
+        if (message.reactions.reactions.isNotEmpty)
           ReactionWidget(
             key: key,
             isMessageBySender: isMessageBySender,
-            reaction: message.reaction,
+            reaction: message.reactions,
             messageReactionConfig: messageReactionConfig,
           ),
       ],

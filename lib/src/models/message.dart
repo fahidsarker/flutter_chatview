@@ -43,7 +43,7 @@ class Message {
   final ReplyMessage replyMessage;
 
   /// Represents reaction on message.
-  final Reaction reaction;
+  final Reactions reactions;
 
   /// Provides message type.
   final MessageType messageType;
@@ -63,11 +63,11 @@ class Message {
     this.assetUrl = '',
     required this.sendBy,
     this.replyMessage = const ReplyMessage(),
-    Reaction? reaction,
+    Reactions? reactions,
     this.messageType = MessageType.text,
     this.voiceMessageDuration,
-    MessageStatus status = MessageStatus.pending,
-  })  : reaction = reaction ?? Reaction(reactions: [], reactedUserIds: []),
+    required MessageStatus status,
+  })  : reactions = reactions ?? Reactions([]),
         key = GlobalKey(),
         _status = ValueNotifier(status),
         assert(
