@@ -58,7 +58,7 @@ class ImageMessageView extends StatelessWidget {
   /// Provides scale of highlighted image when user taps on replied image.
   final double highlightScale;
 
-  String get imageUrl => message.message;
+  String get imageUrl => message.assetUrl;
 
   Widget get iconButton => ShareIcon(
         shareIconConfig: imageMessageConfig?.shareIconConfig,

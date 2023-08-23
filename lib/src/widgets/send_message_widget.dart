@@ -132,7 +132,7 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
                       children: [
                         ValueListenableBuilder<ReplyMessage>(
                           builder: (_, state, child) {
-                            if (state.message.isNotEmpty) {
+                            if (state.message.isNotEmpty || state.assetUrl.isNotEmpty) {
                               return Container(
                                 decoration: BoxDecoration(
                                   color: widget.sendMessageConfig
@@ -298,7 +298,7 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
   }
 
   void _assignRepliedMessage() {
-    if (replyMessage.message.isNotEmpty) {
+    if (replyMessage.message.isNotEmpty || replyMessage.assetUrl.isNotEmpty) {
       _replyMessage.value = const ReplyMessage();
     }
   }
@@ -325,6 +325,7 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
         messageType: message.messageType,
         messageId: message.id,
         voiceMessageDuration: message.voiceMessageDuration,
+        assetUrl: message.assetUrl,
       );
     }
     FocusScope.of(context).requestFocus(_focusNode);

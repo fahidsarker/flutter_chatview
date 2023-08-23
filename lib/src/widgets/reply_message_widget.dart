@@ -54,6 +54,8 @@ class ReplyMessageWidget extends StatelessWidget {
     final replyBySender = message.replyMessage.replyBy == currentUser?.id;
     final textTheme = Theme.of(context).textTheme;
     final replyMessage = message.replyMessage.message;
+    final replyMessageAsset = message.replyMessage.assetUrl;
+
     final chatController = ChatViewInheritedWidget.of(context)?.chatController;
     final messagedUser =
         chatController?.getUserFromId(message.replyMessage.replyBy);
@@ -105,7 +107,7 @@ class ReplyMessageWidget extends StatelessWidget {
                                   80,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
-                                  image: NetworkImage(replyMessage),
+                                  image: NetworkImage(replyMessageAsset),
                                   fit: BoxFit.fill,
                                 ),
                                 borderRadius:

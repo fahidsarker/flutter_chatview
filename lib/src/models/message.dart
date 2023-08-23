@@ -54,11 +54,13 @@ class Message {
   /// Provides max duration for recorded voice message.
   Duration? voiceMessageDuration;
 
+  final String assetUrl;
 
   Message({
-    this.id = '',
+    required this.id,
     required this.message,
     required this.createdAt,
+    this.assetUrl = '',
     required this.sendBy,
     this.replyMessage = const ReplyMessage(),
     Reaction? reaction,

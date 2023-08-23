@@ -38,6 +38,11 @@ class ReplyMessage {
   /// Id of message, it replies to.
   final String messageId;
 
+
+  final bool isValid;
+
+  final String assetUrl;
+
   const ReplyMessage({
     this.messageId = '',
     this.message = '',
@@ -45,6 +50,8 @@ class ReplyMessage {
     this.replyBy = '',
     this.messageType = MessageType.text,
     this.voiceMessageDuration,
+     this.assetUrl = '',
+    this.isValid = true,
   });
 
   factory ReplyMessage.fromJson(Map<String, dynamic> json) => ReplyMessage(
@@ -54,6 +61,8 @@ class ReplyMessage {
         messageType: MessageType.values.firstWhere((element) => element.name == json["message_type"]),
         messageId: json["id"],
         voiceMessageDuration: json["voiceMessageDuration"] == null ? null : Duration(milliseconds: json["voiceMessageDuration"]),
+        isValid: json["isValid"] ?? true,
+        assetUrl: json["assetUrl"] ?? '',
       );
 
   Map<String, dynamic> toJson() => {
@@ -63,5 +72,24 @@ class ReplyMessage {
         'message_type': messageType.name,
         'id': messageId,
         'voiceMessageDuration': voiceMessageDuration?.inMilliseconds,
+        'isValid': isValid,
+        'assetUrl': assetUrl,
       };
+
+
+  ReplyMessage copyWith({
+      bool? isValid
+  }) {
+    return ReplyMessage(
+      isValid: isValid ?? this.isValid,
+      message: message,
+      replyBy: replyBy,
+      replyTo: replyTo,
+      messageType: messageType,
+      voiceMessageDuration: voiceMessageDuration,
+      messageId: messageId,
+      assetUrl: assetUrl,
+    );
+  }
+
 }

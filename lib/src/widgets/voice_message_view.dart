@@ -62,7 +62,7 @@ class _VoiceMessageViewState extends State<VoiceMessageView> {
     super.initState();
     controller = PlayerController()
       ..preparePlayer(
-        path: widget.message.message,
+        path: widget.message.assetUrl,
         noOfSamples: widget.config?.playerWaveStyle
                 ?.getSamplesForWidth(widget.screenWidth * 0.5) ??
             playerWaveStyle.getSamplesForWidth(widget.screenWidth * 0.5),
