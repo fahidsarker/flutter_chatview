@@ -23,7 +23,6 @@ import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:chatview/src/values/enumaration.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
 
 class SendMessageConfiguration {
   /// Used to give background color to text field.
@@ -180,7 +179,6 @@ class ImagePickerConfiguration {
   final int? imageQuality;
 
   /// Preferred camera device to pick image from.
-  final CameraDevice? preferredCameraDevice;
 
   /// Callback when image is picked from camera or gallery,
   ///  we can perform our task on image like adding crop options and return new image path
@@ -190,7 +188,6 @@ class ImagePickerConfiguration {
     this.maxWidth,
     this.maxHeight,
     this.imageQuality,
-    this.preferredCameraDevice,
     this.onMediaPicked,
   });
 }
