@@ -26,8 +26,7 @@ import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:chatview/src/utils/constants/constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-
+import 'package:hl_image_picker/hl_image_picker.dart';
 import '../../chatview.dart';
 import '../utils/debounce.dart';
 import '../utils/package_strings.dart';
@@ -40,10 +39,9 @@ class ChatUITextField extends StatefulWidget {
       required this.textEditingController,
       required this.onPressed,
       required this.onRecordingComplete,
-      required this.onMediaSelected,
+      required this.onMediasSelected,
       this.canNotSend = false})
       : super(key: key);
-
 
   /// Provides configuration of default text field in chat.
   final SendMessageConfiguration? sendMessageConfig;
@@ -61,7 +59,10 @@ class ChatUITextField extends StatefulWidget {
   final Function(String?) onRecordingComplete;
 
   /// Provides callback when user select images from camera/gallery.
-  final Function(String path, String error, MessageType type) onMediaSelected;
+  final Function(
+    List<(String path, MessageType type)>,
+    String error,
+  ) onMediasSelected;
 
   final bool canNotSend;
 
@@ -72,7 +73,6 @@ class ChatUITextField extends StatefulWidget {
 class _ChatUITextFieldState extends State<ChatUITextField> {
   final ValueNotifier<String> _inputText = ValueNotifier('');
 
-  final ImagePicker _imagePicker = ImagePicker();
 
   RecorderController? controller;
 
@@ -248,9 +248,7 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
                             //   config: widget
                             //       .sendMessageConfig?.imagePickerConfiguration,
                             // ),
-                            onPressed: () async{
-                              FocusManager.instance.primaryFocus?.unfocus();
-                            },
+                            onPressed: _pickMedia,
                             icon:
                                 imagePickerIconsConfig?.cameraImagePickerIcon ??
                                     Icon(
@@ -259,21 +257,6 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
                                           ?.cameraIconColor,
                                     ),
                           ),
-                          // IconButton(
-                          //   constraints: const BoxConstraints(),
-                          //   onPressed: () => _onIconPressed(
-                          //     chooseVideo: true,
-                          //     config: widget
-                          //         .sendMessageConfig?.imagePickerConfiguration,
-                          //   ),
-                          //   icon:
-                          //       imagePickerIconsConfig?.cameraImagePickerIcon ??
-                          //           Icon(
-                          //             Icons.video_camera_back_outlined,
-                          //             color: imagePickerIconsConfig
-                          //                 ?.cameraIconColor,
-                          //           ),
-                          // ),
                         ],
                         if (widget.sendMessageConfig?.allowRecordingVoice ??
                             true &&
@@ -300,6 +283,25 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
     );
   }
 
+  void _pickMedia() async {
+    try {
+      FocusManager.instance.primaryFocus?.unfocus();
+      final medias = await HLImagePicker()
+          .openPicker(pickerOptions: HLPickerOptions(maxSelectedAssets: 5));
+
+      widget.onMediasSelected(
+          medias
+              .map((e) => (
+                    e.path,
+                    e.type == 'image' ? MessageType.image : MessageType.video
+                  ))
+              .toList(),
+          '');
+    } catch (e) {
+      widget.onMediasSelected([], e.toString());
+    }
+  }
+
   Future<void> _recordOrStop() async {
     assert(
       defaultTargetPlatform == TargetPlatform.iOS ||
@@ -313,83 +315,6 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
       final path = await controller?.stop();
       isRecording.value = false;
       widget.onRecordingComplete(path);
-    }
-  }
-
-  Future<ImageSource?> _pickImageSource() async {
-    return await showModalBottomSheet(
-        context: context,
-        builder: (_) {
-          return Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ListTile(
-                  leading: Icon(Icons.camera_alt_outlined),
-                  title: Text('Camera'),
-                  onTap: () => Navigator.pop(context, ImageSource.camera),
-                ),
-                ListTile(
-                  leading: Icon(Icons.image),
-                  title: Text('Gallery'),
-                  onTap: () => Navigator.pop(context, ImageSource.gallery),
-                ),
-              ],
-            ),
-          );
-        });
-  }
-
-  void _onIconPressed({
-    ImagePickerConfiguration? config,
-    bool chooseVideo = false,
-  }) async {
-    try {
-      XFile? image;
-
-      final source = await _pickImageSource();
-
-      print(source);
-
-      if (source == null) {
-        return;
-      }
-
-      if (!chooseVideo) {
-        image = await _imagePicker.pickImage(
-            source: source,
-            maxHeight: config?.maxHeight,
-            maxWidth: config?.maxWidth,
-            imageQuality: config?.imageQuality,
-            preferredCameraDevice:
-                config?.preferredCameraDevice ?? CameraDevice.rear,
-            requestFullMetadata: true);
-      } else if (chooseVideo) {
-        image = await _imagePicker.pickVideo(
-          source: source,
-          maxDuration: const Duration(minutes: 5),
-          preferredCameraDevice:
-              config?.preferredCameraDevice ?? CameraDevice.rear,
-        );
-      }
-
-      if (image == null) {
-        return;
-      }
-
-      String? imagePath = image.path;
-      if (config?.onMediaPicked != null) {
-        String? updatedImagePath = await config?.onMediaPicked!(imagePath);
-        if (updatedImagePath != null) imagePath = updatedImagePath;
-      }
-      widget.onMediaSelected(imagePath ?? '', '',
-          chooseVideo ? MessageType.video : MessageType.image);
-    } catch (e) {
-      widget.onMediaSelected('', e.toString(), MessageType.image);
     }
   }
 

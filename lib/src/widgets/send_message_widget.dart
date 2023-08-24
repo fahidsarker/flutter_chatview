@@ -234,7 +234,7 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
                           onPressed: _onPressed,
                           sendMessageConfig: widget.sendMessageConfig,
                           onRecordingComplete: _onRecordingComplete,
-                          onMediaSelected: _onMediaSelectedSelected,
+                          onMediasSelected: _onMediaSelectedSelected,
                           canNotSend:
                               !(widget.sendMessageConfig?.canSendMessage ??
                                   true),
@@ -322,13 +322,14 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
   //   }
   // }
 
-  void _onMediaSelectedSelected(String path, String error, MessageType type) {
+  void _onMediaSelectedSelected(List<(String path, MessageType type)> medias, String error) {
     debugPrint('Call in Send Message Widget');
-    print(path);
-    if (path.isNotEmpty) {
-      widget.onSendTap.call(path, replyMessage, type);
-      _assignRepliedMessage();
+    for (final media in medias){
+    if (media.$1.isNotEmpty) {
+    widget.onSendTap.call(media.$1, replyMessage, media.$2);
+    _assignRepliedMessage();
     }
+  }
   }
 
   void _assignRepliedMessage() {

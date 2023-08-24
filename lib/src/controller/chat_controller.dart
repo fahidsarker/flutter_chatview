@@ -92,7 +92,19 @@ class ChatController {
   }
 
   void updateMessageList(List<Message> messages) {
-    initialMessageList = messages;
+    // initialMessageList = messages;
+    // messageStreamController.sink.add(initialMessageList);
+    final newList = [...initialMessageList];
+    for (final message in messages) {
+      final index = newList.indexWhere((element) => element.id == message.id);
+      if (index != -1) {
+        newList[index] = message;
+      } else {
+        newList.add(message);
+      }
+    }
+
+    initialMessageList = newList;
     messageStreamController.sink.add(initialMessageList);
   }
 
