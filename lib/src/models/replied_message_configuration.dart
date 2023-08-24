@@ -22,6 +22,7 @@
 import 'package:chatview/src/models/replied_msg_auto_scroll_config.dart';
 import 'package:flutter/material.dart';
 
+import '../../chatview.dart';
 import '../values/typedefs.dart';
 
 class RepliedMessageConfiguration {
@@ -75,6 +76,8 @@ class RepliedMessageConfiguration {
   /// Color for microphone icon.
   final Color? micIconColor;
 
+  final Future<ReplyMessage> Function(ReplyMessage)? preProcessReplyMessage;
+
   const RepliedMessageConfiguration({
     this.verticalBarColor,
     this.backgroundColor,
@@ -92,5 +95,6 @@ class RepliedMessageConfiguration {
     this.opacity,
     this.repliedMsgAutoScrollConfig = const RepliedMsgAutoScrollConfig(),
     this.micIconColor,
+    this.preProcessReplyMessage
   });
 }

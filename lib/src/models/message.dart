@@ -58,6 +58,8 @@ class Message {
 
   final bool unsent;
 
+  final DateTime? readAt;
+
   Message({
     required this.id,
     required this.message,
@@ -70,6 +72,7 @@ class Message {
     this.voiceMessageDuration,
     required this.status,
     this.unsent = false,
+    this.readAt,
   })  : reactions = reactions ?? Reactions(id, []),
         key = GlobalKey(),
         assert(
