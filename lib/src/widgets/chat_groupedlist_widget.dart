@@ -198,13 +198,13 @@ class _ChatGroupedListWidgetState extends State<ChatGroupedListWidget>
               : ValueListenableBuilder(
                   valueListenable: ChatViewInheritedWidget.of(context)!
                       .chatController
-                      .typingIndicatorNotifier,
+                      .typingIndicatorNotifierFor,
                   builder: (context, value, child) => TypingIndicator(
                         typeIndicatorConfig: widget.typeIndicatorConfig,
                         chatBubbleConfig:
                             chatBubbleConfig?.inComingChatBubbleConfig,
-                        showIndicator: value,
-                        profilePic: profileCircleConfig?.profileImageUrl,
+                        showIndicator: value != null,
+                        profilePic: value?.profilePhoto,
                       )),
           SizedBox(
             height: MediaQuery.of(context).size.width *

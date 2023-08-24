@@ -179,7 +179,7 @@ class _ChatViewState extends State<ChatView>
     // TODO: Remove this in new versions.
     // ignore: deprecated_member_use_from_same_package
     if (widget.showTypingIndicator ||
-        widget.chatController.showTypingIndicator &&
+        widget.chatController.showingTypingIndicatorFor != null &&
             chatViewState.hasMessages) {
       chatController.scrollToLastMessage();
     }

@@ -95,17 +95,23 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
             BorderRadius.circular(textFieldBorderRadius),
       );
 
+
   ValueNotifier<TypeWriterStatus> composingStatus =
       ValueNotifier(TypeWriterStatus.typed);
 
   late Debouncer debouncer;
 
+  void onFocusChange(){
+    composingStatus.value = widget.focusNode.hasFocus ? TypeWriterStatus.typing : TypeWriterStatus.typed;
+  }
+
   @override
   void initState() {
     attachListeners();
+    widget.focusNode.addListener(onFocusChange);
     debouncer = Debouncer(
         sendMessageConfig?.textFieldConfig?.compositionThresholdTime ??
-            const Duration(seconds: 1));
+            const Duration(seconds: 10));
     super.initState();
 
     if (defaultTargetPlatform == TargetPlatform.iOS ||
@@ -120,6 +126,7 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
     composingStatus.dispose();
     isRecording.dispose();
     _inputText.dispose();
+    widget.focusNode.removeListener(onFocusChange);
     super.dispose();
   }
 
@@ -319,11 +326,11 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
   }
 
   void _onChanged(String inputText) {
-    debouncer.run(() {
-      composingStatus.value = TypeWriterStatus.typed;
-    }, () {
-      composingStatus.value = TypeWriterStatus.typing;
-    });
+    // debouncer.run(() {
+    //   composingStatus.value = TypeWriterStatus.typed;
+    // }, () {
+    //   composingStatus.value = TypeWriterStatus.typing;
+    // });
     _inputText.value = inputText;
   }
 }

@@ -102,7 +102,7 @@ class TextMessageView extends StatelessWidget {
                       textTheme.bodyMedium!.copyWith(
                         color: Colors.white,
                         fontSize: isUnsent ? 12 : 16,
-                        fontStyle: FontStyle.italic
+                        fontStyle: isUnsent ? FontStyle.italic : null
                       ),
                 ),
         ),

@@ -83,5 +83,23 @@ class Message {
   String get uniqueSignature {
     return '$id${status.name}${reactions.reactions.map((e) => '${e.userID}${e.reaction}')}';
   }
-
+  Message copyWith({
+    String? message,
+    String? assetUrl,
+    ReplyMessage? replyMessage,
+    MessageStatus? status,
+  }) {
+    return Message(
+      id: id,
+      message: message ?? this.message,
+      createdAt: createdAt,
+      sendBy: sendBy,
+      replyMessage: replyMessage ?? this.replyMessage,
+      reactions: reactions,
+      messageType: messageType,
+      voiceMessageDuration: voiceMessageDuration,
+      status: status ?? this.status,
+      assetUrl: assetUrl ?? this.assetUrl,
+    );
+  }
 }

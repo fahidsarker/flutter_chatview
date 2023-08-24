@@ -97,6 +97,9 @@ extension MessageTypes on MessageType {
   bool get isCustom => this == MessageType.custom;
 
   bool get isVideo => this == MessageType.video;
+
+  bool get containsAsset => isImage || isVoice || isVideo;
+
 }
 
 /// Extension on ConnectionState for checking specific connection.

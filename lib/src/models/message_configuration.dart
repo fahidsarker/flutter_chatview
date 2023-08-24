@@ -36,6 +36,10 @@ class MessageConfiguration {
   /// Provides builder to create view for custom messages.
   final Widget Function(Message)? customMessageBuilder;
 
+  // final Widget Function(Message, bool, MessageConfiguration?, bool, double)? encryptedMessageBuilder;
+
+  final Future<Message> Function(Message)? preprocessMessage;
+
   /// Configurations for voice message bubble
   final VoiceMessageConfiguration? voiceMessageConfig;
 
@@ -45,5 +49,6 @@ class MessageConfiguration {
     this.emojiMessageConfig,
     this.customMessageBuilder,
     this.voiceMessageConfig,
+    this.preprocessMessage,
   });
 }
