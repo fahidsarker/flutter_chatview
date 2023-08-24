@@ -56,6 +56,8 @@ class Message {
 
   final String assetUrl;
 
+  final bool unsent;
+
   Message({
     required this.id,
     required this.message,
@@ -67,6 +69,7 @@ class Message {
     this.messageType = MessageType.text,
     this.voiceMessageDuration,
     required this.status,
+    this.unsent = false,
   })  : reactions = reactions ?? Reactions(id, []),
         key = GlobalKey(),
         assert(

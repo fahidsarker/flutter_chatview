@@ -78,17 +78,19 @@ class ReplyMessage {
 
 
   ReplyMessage copyWith({
-      bool? isValid
+      bool? isValid,
+    String? message,
+    String? assetUrl
   }) {
     return ReplyMessage(
       isValid: isValid ?? this.isValid,
-      message: message,
+      message: message ?? this.message,
       replyBy: replyBy,
       replyTo: replyTo,
       messageType: messageType,
       voiceMessageDuration: voiceMessageDuration,
       messageId: messageId,
-      assetUrl: assetUrl,
+      assetUrl: assetUrl ?? this.assetUrl,
     );
   }
 

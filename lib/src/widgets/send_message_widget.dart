@@ -43,6 +43,7 @@ class SendMessageWidget extends StatefulWidget {
     this.onReplyCloseCallback,
   }) : super(key: key);
 
+
   /// Provides call back when user tap on send button on text field.
   final StringMessageCallBack onSendTap;
 

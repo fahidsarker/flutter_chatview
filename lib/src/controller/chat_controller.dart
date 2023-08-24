@@ -31,6 +31,8 @@ class ChatController {
 
   ScrollController scrollController;
 
+  final ChatUser currentUser;
+
   /// Allow user to show typing indicator defaults to false.
   final ValueNotifier<bool> _showTypingIndicator = ValueNotifier(false);
 
@@ -61,7 +63,8 @@ class ChatController {
     required this.scrollController,
     required this.chatUsers,
     required this.onReactionSet,
-    required this.onRemoveReact
+    required this.onRemoveReact,
+    required this.currentUser,
   });
 
   final Function(

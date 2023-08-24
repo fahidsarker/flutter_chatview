@@ -39,7 +39,10 @@ class TextMessageView extends StatelessWidget {
     this.messageReactionConfig,
     this.highlightMessage = false,
     this.highlightColor,
+    this.isUnsent = false,
   }) : super(key: key);
+
+  final bool isUnsent;
 
   /// Represents current message is sent by current user.
   final bool isMessageBySender;
@@ -77,9 +80,9 @@ class TextMessageView extends StatelessWidget {
               maxWidth: chatBubbleMaxWidth ??
                   MediaQuery.of(context).size.width * 0.75),
           padding: _padding ??
-              const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 10,
+               EdgeInsets.symmetric(
+                horizontal: isUnsent ? 8 : 12,
+                vertical: isUnsent ? 5 : 10,
               ),
           margin: _margin ??
               EdgeInsets.fromLTRB(
@@ -98,7 +101,8 @@ class TextMessageView extends StatelessWidget {
                   style: _textStyle ??
                       textTheme.bodyMedium!.copyWith(
                         color: Colors.white,
-                        fontSize: 16,
+                        fontSize: isUnsent ? 12 : 16,
+                        fontStyle: FontStyle.italic
                       ),
                 ),
         ),

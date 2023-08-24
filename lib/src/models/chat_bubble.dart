@@ -63,4 +63,19 @@ class ChatBubble {
     this.receiptsWidgetConfig,
     this.onMessageRead,
   });
+  
+  ChatBubble copyWith({Color? color}) {
+    return ChatBubble(
+      color: color ?? this.color,
+      borderRadius : this.borderRadius,
+      textStyle : this.textStyle,
+      padding : this.padding,
+      margin : this.margin,
+      linkPreviewConfig : this.linkPreviewConfig,
+      senderNameTextStyle : this.senderNameTextStyle,
+      receiptsWidgetConfig : this.receiptsWidgetConfig,
+      onMessageRead : this.onMessageRead,
+    );
+  }
+  
 }
