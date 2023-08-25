@@ -24,6 +24,7 @@ import 'dart:io';
 
 import 'package:chatview/src/extensions/extensions.dart';
 import 'package:chatview/src/models/models.dart';
+import 'package:chatview/src/widgets/censored.dart';
 import 'package:flutter/material.dart';
 
 import 'reaction_widget.dart';
@@ -38,7 +39,10 @@ class ImageMessageView extends StatelessWidget {
     this.messageReactionConfig,
     this.highlightImage = false,
     this.highlightScale = 1.2,
+    required this.censoredNotifier,
   }) : super(key: key);
+
+  final ValueNotifier<bool> censoredNotifier;
 
   /// Provides message instance of chat.
   final Message message;
@@ -67,6 +71,8 @@ class ImageMessageView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final height= imageMessageConfig?.height ?? 200;
+    final width= imageMessageConfig?.width ?? 150;
     return Row(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment:
@@ -93,42 +99,47 @@ class ImageMessageView extends StatelessWidget {
                         left: isMessageBySender ? 0 : 6,
                         bottom: message.reactions.reactions.isNotEmpty ? 15 : 0,
                       ),
-                  height: imageMessageConfig?.height ?? 200,
-                  width: imageMessageConfig?.width ?? 150,
+                  height: height,
+                  width: width,
                   child: ClipRRect(
-                    borderRadius: imageMessageConfig?.borderRadius ??
-                        BorderRadius.circular(14),
-                    child: (() {
-                      if (imageUrl.isUrl) {
-                        return Image.network(
-                          imageUrl,
-                          fit: BoxFit.fitHeight,
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return Center(
-                              child: CircularProgressIndicator(
-                                value: loadingProgress.expectedTotalBytes !=
-                                        null
-                                    ? loadingProgress.cumulativeBytesLoaded /
-                                        loadingProgress.expectedTotalBytes!
-                                    : null,
-                              ),
-                            );
-                          },
-                        );
-                      } else if (imageUrl.fromMemory) {
-                        return Image.memory(
-                          base64Decode(imageUrl
-                              .substring(imageUrl.indexOf('base64') + 7)),
-                          fit: BoxFit.fill,
-                        );
-                      } else {
-                        return Image.file(
-                          File(imageUrl),
-                          fit: BoxFit.fill,
-                        );
-                      }
-                    }()),
+                    borderRadius: imageMessageConfig?.borderRadius ?? BorderRadius.circular(14),
+                    child: ValueListenableBuilder<bool>(
+                      valueListenable: censoredNotifier,
+                      child: (() {
+                        if (imageUrl.isUrl) {
+                          return Image.network(
+                            imageUrl,
+                            fit: BoxFit.fitHeight,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes !=
+                                      null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
+                                      : null,
+                                ),
+                              );
+                            },
+                          );
+                        } else if (imageUrl.fromMemory) {
+                          return Image.memory(
+                            base64Decode(imageUrl
+                                .substring(imageUrl.indexOf('base64') + 7)),
+                            fit: BoxFit.fill,
+                          );
+                        } else {
+                          return Image.file(
+                            File(imageUrl),
+                            fit: BoxFit.fill,
+                          );
+                        }
+                      }()),
+                      builder: (_, value, child) {
+                        return value ?  Censored(height: height, width: width,) : child!;
+                      },
+                    ),
                   ),
                 ),
               ),

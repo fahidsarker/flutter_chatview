@@ -22,6 +22,7 @@
 import 'dart:io';
 
 import 'package:audio_waveforms/audio_waveforms.dart';
+import 'package:chatview/src/widgets/censored.dart';
 import 'package:flutter/material.dart';
 
 import 'package:chatview/src/extensions/extensions.dart';
@@ -52,14 +53,20 @@ class ReplyMessageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final chatController = ChatViewInheritedWidget.of(context)?.chatController;
+    final chatController = ChatViewInheritedWidget
+        .of(context)
+        ?.chatController;
 
-    final textTheme = Theme.of(context).textTheme;
-    final currentUser = ChatViewInheritedWidget.of(context)?.currentUser;
+    final textTheme = Theme
+        .of(context)
+        .textTheme;
+    final currentUser = ChatViewInheritedWidget
+        .of(context)
+        ?.currentUser;
 
     final replyBySender = message.replyMessage.replyBy == currentUser?.id;
     final messagedUser =
-        chatController?.getUserFromId(message.replyMessage.replyBy);
+    chatController?.getUserFromId(message.replyMessage.replyBy);
     final replyBy = replyBySender ? PackageStrings.you : messagedUser?.name;
 
     return GestureDetector(
@@ -72,10 +79,10 @@ class ReplyMessageWidget extends StatelessWidget {
               bottom: 4,
             ),
         constraints:
-            BoxConstraints(maxWidth: repliedMessageConfig?.maxWidth ?? 280),
+        BoxConstraints(maxWidth: repliedMessageConfig?.maxWidth ?? 280),
         child: Column(
           crossAxisAlignment:
-              replyBySender ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          replyBySender ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
             Text(
               "${PackageStrings.repliedBy} $replyBy",
@@ -86,7 +93,8 @@ class ReplyMessageWidget extends StatelessWidget {
             const SizedBox(height: 6),
             FutureBuilder<ReplyMessage>(
               future: repliedMessageConfig?.preProcessReplyMessage
-                      ?.call(message.replyMessage) ?? Future.value(message.replyMessage),
+                  ?.call(message.replyMessage) ??
+                  Future.value(message.replyMessage),
               builder: (_, snap) {
                 final rm = snap.data;
 
@@ -95,12 +103,18 @@ class ReplyMessageWidget extends StatelessWidget {
                 }
 
                 final message = this.message.copyWith(
-                      replyMessage: rm,
-                    );
+                  replyMessage: rm,
+                );
 
                 final replyMessage = message.replyMessage.message;
                 final replyMessageAsset = message.replyMessage.assetUrl;
 
+                final height = repliedMessageConfig
+                    ?.repliedImageMessageHeight ??
+                    100;
+                final width = repliedMessageConfig
+                    ?.repliedImageMessageWidth ??
+                    80;
 
                 return IntrinsicHeight(
                   child: Row(
@@ -111,95 +125,98 @@ class ReplyMessageWidget extends StatelessWidget {
                       if (!replyBySender)
                         VerticalLine(
                           verticalBarWidth:
-                              repliedMessageConfig?.verticalBarWidth,
+                          repliedMessageConfig?.verticalBarWidth,
                           verticalBarColor:
-                              repliedMessageConfig?.verticalBarColor,
+                          repliedMessageConfig?.verticalBarColor,
                           rightPadding: 4,
                         ),
                       Flexible(
                         child: Opacity(
                           opacity: repliedMessageConfig?.opacity ?? 0.8,
-                          child: message.replyMessage.messageType.isImage
-                              ? Container(
-                                  height: repliedMessageConfig
-                                          ?.repliedImageMessageHeight ??
-                                      100,
-                                  width: repliedMessageConfig
-                                          ?.repliedImageMessageWidth ??
-                                      80,
-                                  decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                      image: message.replyMessage.assetUrl.isUrl
-                                          ? Image.network(replyMessageAsset)
-                                              .image
-                                          : Image.file(File(replyMessageAsset))
-                                              .image,
-                                      fit: BoxFit.fill,
-                                    ),
-                                    borderRadius:
-                                        repliedMessageConfig?.borderRadius ??
-                                            BorderRadius.circular(14),
-                                  ),
-                                )
-                              : Container(
-                                  constraints: BoxConstraints(
-                                    maxWidth:
-                                        repliedMessageConfig?.maxWidth ?? 280,
-                                  ),
-                                  padding: repliedMessageConfig?.padding ??
-                                      const EdgeInsets.symmetric(
-                                        vertical: 8,
-                                        horizontal: 12,
-                                      ),
-                                  decoration: BoxDecoration(
-                                    borderRadius: _borderRadius(
-                                      replyMessage: replyMessage,
-                                      replyBySender: replyBySender,
-                                    ),
-                                    color:
-                                        repliedMessageConfig?.backgroundColor ??
-                                            Colors.grey.shade500,
-                                  ),
-                                  child: message
-                                          .replyMessage.messageType.isVoice
-                                      ? Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(
-                                              Icons.mic,
-                                              color: repliedMessageConfig
-                                                      ?.micIconColor ??
-                                                  Colors.white,
-                                            ),
-                                            const SizedBox(width: 2),
-                                            if (message.replyMessage
-                                                    .voiceMessageDuration !=
-                                                null)
-                                              Text(
-                                                message.replyMessage
-                                                    .voiceMessageDuration!
-                                                    .toHHMMSS(),
-                                                style: repliedMessageConfig
-                                                    ?.textStyle,
-                                              ),
-                                          ],
-                                        )
-                                      : Text(
-                                          replyMessage,
-                                          style: repliedMessageConfig
-                                                  ?.textStyle ??
-                                              textTheme.bodyMedium!.copyWith(
-                                                  color: Colors.black),
-                                        ),
+                          child: ValueListenableBuilder(
+                            valueListenable: chatController
+                                ?.enabledCensoredModeNotifier ??
+                                ValueNotifier(false),
+                            builder: (_, v, c) => v ? Censored(height: height, width: width,) : c!,
+                            child: message.replyMessage.messageType.isImage
+                                ? Container(
+                              height: height,
+                              width: width,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: message.replyMessage.assetUrl.isUrl
+                                      ? Image
+                                      .network(replyMessageAsset)
+                                      .image
+                                      : Image
+                                      .file(File(replyMessageAsset))
+                                      .image,
+                                  fit: BoxFit.fill,
                                 ),
+                                borderRadius:
+                                repliedMessageConfig?.borderRadius ??
+                                    BorderRadius.circular(14),
+                              ),
+                            )
+                                : Container(
+                              constraints: BoxConstraints(
+                                maxWidth:
+                                repliedMessageConfig?.maxWidth ?? 280,
+                              ),
+                              padding: repliedMessageConfig?.padding ??
+                                  const EdgeInsets.symmetric(
+                                    vertical: 8,
+                                    horizontal: 12,
+                                  ),
+                              decoration: BoxDecoration(
+                                borderRadius: _borderRadius(
+                                  replyMessage: replyMessage,
+                                  replyBySender: replyBySender,
+                                ),
+                                color:
+                                repliedMessageConfig?.backgroundColor ??
+                                    Colors.grey.shade500,
+                              ),
+                              child: message
+                                  .replyMessage.messageType.isVoice
+                                  ? Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.mic,
+                                    color: repliedMessageConfig
+                                        ?.micIconColor ??
+                                        Colors.white,
+                                  ),
+                                  const SizedBox(width: 2),
+                                  if (message.replyMessage
+                                      .voiceMessageDuration !=
+                                      null)
+                                    Text(
+                                      message.replyMessage
+                                          .voiceMessageDuration!
+                                          .toHHMMSS(),
+                                      style: repliedMessageConfig
+                                          ?.textStyle,
+                                    ),
+                                ],
+                              )
+                                  : Text(
+                                replyMessage,
+                                style: repliedMessageConfig
+                                    ?.textStyle ??
+                                    textTheme.bodyMedium!.copyWith(
+                                        color: Colors.black),
+                              ),
+                            ),),
                         ),
                       ),
                       if (replyBySender)
                         VerticalLine(
                           verticalBarWidth:
-                              repliedMessageConfig?.verticalBarWidth,
+                          repliedMessageConfig?.verticalBarWidth,
                           verticalBarColor:
-                              repliedMessageConfig?.verticalBarColor,
+                          repliedMessageConfig?.verticalBarColor,
                           leftPadding: 4,
                         ),
                     ],
@@ -219,11 +236,11 @@ class ReplyMessageWidget extends StatelessWidget {
   }) =>
       replyBySender
           ? repliedMessageConfig?.borderRadius ??
-              (replyMessage.length < 37
-                  ? BorderRadius.circular(replyBorderRadius1)
-                  : BorderRadius.circular(replyBorderRadius2))
+          (replyMessage.length < 37
+              ? BorderRadius.circular(replyBorderRadius1)
+              : BorderRadius.circular(replyBorderRadius2))
           : repliedMessageConfig?.borderRadius ??
-              (replyMessage.length < 29
-                  ? BorderRadius.circular(replyBorderRadius1)
-                  : BorderRadius.circular(replyBorderRadius2));
+          (replyMessage.length < 29
+              ? BorderRadius.circular(replyBorderRadius1)
+              : BorderRadius.circular(replyBorderRadius2));
 }

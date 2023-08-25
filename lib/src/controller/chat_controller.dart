@@ -35,6 +35,7 @@ class ChatController {
 
   /// Allow user to show typing indicator defaults to false.
   final ValueNotifier<ChatUser?> _showTypingIndicatorFor = ValueNotifier(null);
+
   // final ValueNotifier<bool> _showTypingIndicator = ValueNotifier(false);
 
   /// TypingIndicator as [ValueNotifier] for [GroupedChatList] widget's typingIndicator [ValueListenableBuilder].
@@ -43,12 +44,13 @@ class ChatController {
   ///    chatcontroller.typingIndicatorNotifier.addListener((){});
   ///  ```
   /// For more functionalities see [ValueNotifier].
-  ValueNotifier<ChatUser?> get typingIndicatorNotifierFor => _showTypingIndicatorFor;
+  ValueNotifier<ChatUser?> get typingIndicatorNotifierFor =>
+      _showTypingIndicatorFor;
 
   /// Getter for typingIndicator value instead of accessing [_showTypingIndicator.value]
   /// for better accessibility.
   // bool get showTypingIndicator => _showTypingIndicator.value;
-  ChatUser? get showingTypingIndicatorFor => _showTypingIndicatorFor.value ;
+  ChatUser? get showingTypingIndicatorFor => _showTypingIndicatorFor.value;
 
   /// Setter for changing values of typingIndicator
   /// ```dart
@@ -56,7 +58,10 @@ class ChatController {
   ///  chatContoller.setTypingIndicator = false; // for hiding indicator
   ///  ````
   // set setTypingIndicator(bool value) => _showTypingIndicator.value = value;
-  set setTypingIndicator(String? userID) => _showTypingIndicatorFor.value = userID == null ? null : chatUsers.firstWhere((element) => element.id == userID);
+  set setTypingIndicator(String? userID) =>
+      _showTypingIndicatorFor.value = userID == null
+          ? null
+          : chatUsers.firstWhere((element) => element.id == userID);
 
   /// Represents list of chat users
   List<ChatUser> chatUsers;
@@ -71,16 +76,16 @@ class ChatController {
   });
 
   final Function(
-  String emoji,
-  String messageId,
-  String userId,
+    String emoji,
+    String messageId,
+    String userId,
   ) onReactionSet;
 
   final Function(
-      String emoji,
-      String messageId,
-      String userId,
-      ) onRemoveReact;
+    String emoji,
+    String messageId,
+    String userId,
+  ) onRemoveReact;
 
   /// Represents message stream of chat
   StreamController<List<Message>> messageStreamController = StreamController();
@@ -94,20 +99,28 @@ class ChatController {
     messageStreamController.sink.add(initialMessageList);
   }
 
+  // if message does not exist in list then add message in list at the top
   void updateMessageList(List<Message> messages) {
-    // initialMessageList = messages;
-    // messageStreamController.sink.add(initialMessageList);
-    final newList = [...initialMessageList];
-    for (final message in messages) {
-      final index = newList.indexWhere((element) => element.id == message.id);
-      if (index != -1) {
-        newList[index] = message;
-      } else {
-        newList.add(message);
+    // final newList = [...initialMessageList];
+    // for (final message in messages) {
+    //   final index = newList.indexWhere((element) => element.id == message.id);
+    //   if (index != -1) {
+    //     newList[index] = message;
+    //   } else {
+    //     newList.add(message);
+    //   }
+    // }
+
+    final newList = [...messages];
+    for (final m in initialMessageList) {
+      final index = newList.indexWhere((element) => element.id == m.id);
+      if (index == -1) {
+        newList.add(m);
       }
     }
 
-    initialMessageList = newList;
+    initialMessageList = newList
+      ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
     messageStreamController.sink.add(initialMessageList);
   }
 
@@ -165,6 +178,16 @@ class ChatController {
   }
 
   /// Function for getting ChatUser object from user id
-  ChatUser getUserFromId(String userId) =>
-      chatUsers.firstWhere((element) => element.id == userId);
+  ChatUser getUserFromId(String userId) => chatUsers.firstWhere(
+        (element) => element.id == userId,
+      );
+
+  final ValueNotifier<bool> _enabledCensoredMode = ValueNotifier(true);
+
+  ValueNotifier<bool> get enabledCensoredModeNotifier => _enabledCensoredMode;
+
+  bool get enabledCensoredMode => _enabledCensoredMode.value;
+
+  set enabledCensoredMode(bool value) => _enabledCensoredMode.value = value;
+
 }

@@ -233,6 +233,7 @@ class _MessageViewState extends State<MessageView>
                 } else if (data.messageType.isImage) {
                   return ImageMessageView(
                     message: data,
+                    censoredNotifier: widget.controller?.enabledCensoredModeNotifier ?? ValueNotifier<bool>(false),
                     isMessageBySender: widget.isMessageBySender,
                     imageMessageConfig: messageConfig?.imageMessageConfig,
                     messageReactionConfig: messageConfig?.messageReactionConfig,
@@ -293,6 +294,7 @@ class _MessageViewState extends State<MessageView>
       ),
     );
   }
+
 
   void _onLongPressStart(LongPressStartDetails details) async {
     await _animationController?.forward();

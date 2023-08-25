@@ -127,6 +127,7 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
   Widget build(BuildContext context) {
     // Get user from id.
 
+
     final messagedUser = chatController?.getUserFromId(widget.message.sendBy);
     return AbsorbPointer(
       absorbing: widget.message.unsent,
