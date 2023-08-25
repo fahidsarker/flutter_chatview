@@ -94,4 +94,28 @@ class ReplyMessage {
     );
   }
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ReplyMessage &&
+          runtimeType == other.runtimeType &&
+          message == other.message &&
+          replyBy == other.replyBy &&
+          replyTo == other.replyTo &&
+          messageType == other.messageType &&
+          voiceMessageDuration == other.voiceMessageDuration &&
+          messageId == other.messageId &&
+          isValid == other.isValid &&
+          assetUrl == other.assetUrl;
+
+  @override
+  int get hashCode =>
+      message.hashCode ^
+      replyBy.hashCode ^
+      replyTo.hashCode ^
+      messageType.hashCode ^
+      voiceMessageDuration.hashCode ^
+      messageId.hashCode ^
+      isValid.hashCode ^
+      assetUrl.hashCode;
 }

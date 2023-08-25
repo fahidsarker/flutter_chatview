@@ -23,6 +23,7 @@ import 'dart:async';
 import 'dart:io' if (kIsWeb) 'dart:html';
 
 import 'package:chatview/src/extensions/extensions.dart';
+import 'package:chatview/src/utils/message_notifier.dart';
 import 'package:chatview/src/widgets/chat_groupedlist_widget.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
@@ -120,7 +121,7 @@ class _ChatListWidgetState extends State<ChatListWidget>
 
   ChatController get chatController => widget.chatController;
 
-  List<Message> get messageList => chatController.initialMessageList;
+  List<MessageNotifier> get messageList => chatController.initialMessageList;
 
   ScrollController get scrollController => chatController.scrollController;
 
@@ -184,44 +185,44 @@ class _ChatListWidgetState extends State<ChatListWidget>
         Expanded(
           child: ValueListenableBuilder<bool>(
             valueListenable: showPopUp,
+            child: ChatGroupedListWidget(
+              showPopUp: false,
+              showTypingIndicator: showTypingIndicator,
+              scrollController: scrollController,
+              isEnableSwipeToSeeTime:
+                  featureActiveConfig?.enableSwipeToSeeTime ?? true,
+              chatBackgroundConfig: widget.chatBackgroundConfig,
+              assignReplyMessage: widget.assignReplyMessage,
+              replyMessage: widget.replyMessage,
+              swipeToReplyConfig: widget.swipeToReplyConfig,
+              repliedMessageConfig: widget.repliedMessageConfig,
+              profileCircleConfig: widget.profileCircleConfig,
+              messageConfig: widget.messageConfig,
+              chatBubbleConfig: widget.chatBubbleConfig,
+              typeIndicatorConfig: widget.typeIndicatorConfig,
+              onChatBubbleLongPress: (yCoordinate, xCoordinate, message) {
+                if (featureActiveConfig?.enableReactionPopup ?? false) {
+                  _reactionPopupKey.currentState?.refreshWidget(
+                    message: message,
+                    xCoordinate: xCoordinate,
+                    yCoordinate:
+                        yCoordinate < 0 ? -(yCoordinate) - 5 : yCoordinate,
+                  );
+                  showPopUp.value = true;
+                }
+                if (featureActiveConfig?.enableReplySnackBar ?? false) {
+                  _showReplyPopup(
+                    message: message,
+                    sendByCurrentUser: message.sendBy == currentUser?.id,
+                  );
+                }
+              },
+              onChatListTap: _onChatListTap,
+            ),
             builder: (_, showPopupValue, child) {
               return Stack(
                 children: [
-                  ChatGroupedListWidget(
-                    showPopUp: showPopupValue,
-                    showTypingIndicator: showTypingIndicator,
-                    scrollController: scrollController,
-                    isEnableSwipeToSeeTime:
-                        featureActiveConfig?.enableSwipeToSeeTime ?? true,
-                    chatBackgroundConfig: widget.chatBackgroundConfig,
-                    assignReplyMessage: widget.assignReplyMessage,
-                    replyMessage: widget.replyMessage,
-                    swipeToReplyConfig: widget.swipeToReplyConfig,
-                    repliedMessageConfig: widget.repliedMessageConfig,
-                    profileCircleConfig: widget.profileCircleConfig,
-                    messageConfig: widget.messageConfig,
-                    chatBubbleConfig: widget.chatBubbleConfig,
-                    typeIndicatorConfig: widget.typeIndicatorConfig,
-                    onChatBubbleLongPress: (yCoordinate, xCoordinate, message) {
-                      if (featureActiveConfig?.enableReactionPopup ?? false) {
-                        _reactionPopupKey.currentState?.refreshWidget(
-                          message: message,
-                          xCoordinate: xCoordinate,
-                          yCoordinate: yCoordinate < 0
-                              ? -(yCoordinate) - 5
-                              : yCoordinate,
-                        );
-                        showPopUp.value = true;
-                      }
-                      if (featureActiveConfig?.enableReplySnackBar ?? false) {
-                        _showReplyPopup(
-                          message: message,
-                          sendByCurrentUser: message.sendBy == currentUser?.id,
-                        );
-                      }
-                    },
-                    onChatListTap: _onChatListTap,
-                  ),
+                  child!,
                   if (featureActiveConfig?.enableReactionPopup ?? false)
                     ReactionPopup(
                       key: _reactionPopupKey,

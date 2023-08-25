@@ -27,9 +27,6 @@ class Message {
   /// Provides id
   final String id;
 
-  /// Used for accessing widget's render box.
-  final GlobalKey key;
-
   /// Provides actual message it will be text or image/audio file path.
   final String message;
 
@@ -60,6 +57,8 @@ class Message {
 
   final DateTime? readAt;
 
+  final GlobalKey key;
+
   Message({
     required this.id,
     required this.message,
@@ -73,19 +72,20 @@ class Message {
     required this.status,
     this.unsent = false,
     this.readAt,
-  })  : reactions = reactions ?? Reactions(id, []),
-        key = GlobalKey(),
+  })  : key = GlobalKey(),
+        reactions = reactions ?? Reactions(id, []),
         assert(
-        (messageType.isVoice
-            ? ((defaultTargetPlatform == TargetPlatform.iOS ||
-            defaultTargetPlatform == TargetPlatform.android))
-            : true),
-        "Voice messages are only supported with android and ios platform",
+          (messageType.isVoice
+              ? ((defaultTargetPlatform == TargetPlatform.iOS ||
+                  defaultTargetPlatform == TargetPlatform.android))
+              : true),
+          "Voice messages are only supported with android and ios platform",
         );
 
   String get uniqueSignature {
     return '$id${status.name}${reactions.reactions.map((e) => '${e.userID}${e.reaction}')}';
   }
+
   Message copyWith({
     String? message,
     String? assetUrl,
@@ -104,5 +104,98 @@ class Message {
       status: status ?? this.status,
       assetUrl: assetUrl ?? this.assetUrl,
     );
+  }
+
+  /// returns values which are different from other message
+  List<dynamic> differentFrom(Message other) {
+    final list = <dynamic>[];
+    if (message != other.message) {
+      list.add(message);
+    }
+    if (assetUrl != other.assetUrl) {
+      list.add(assetUrl);
+    }
+    if (replyMessage != other.replyMessage) {
+      list.add(replyMessage);
+    }
+    if (status != other.status) {
+      list.add(status);
+    }
+
+    if (reactions != other.reactions) {
+      list.add(reactions);
+    }
+
+    if (messageType != other.messageType) {
+      list.add(messageType);
+    }
+
+    if (voiceMessageDuration != other.voiceMessageDuration) {
+      list.add(voiceMessageDuration);
+    }
+
+    if (createdAt != other.createdAt) {
+      list.add(createdAt);
+    }
+
+    if (sendBy != other.sendBy) {
+      list.add(sendBy);
+    }
+
+    if (id != other.id) {
+      list.add(id);
+    }
+
+    if (unsent != other.unsent) {
+      list.add(unsent);
+    }
+
+    if (readAt != other.readAt) {
+      list.add(readAt);
+    }
+
+    if (key != other.key) {
+      list.add(key);
+    }
+
+    return list;
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Message &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          message == other.message &&
+          createdAt == other.createdAt &&
+          sendBy == other.sendBy &&
+          replyMessage == other.replyMessage &&
+          reactions == other.reactions &&
+          messageType == other.messageType &&
+          status == other.status &&
+          voiceMessageDuration == other.voiceMessageDuration &&
+          assetUrl == other.assetUrl &&
+          unsent == other.unsent &&
+          readAt == other.readAt;
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      message.hashCode ^
+      createdAt.hashCode ^
+      sendBy.hashCode ^
+      replyMessage.hashCode ^
+      reactions.hashCode ^
+      messageType.hashCode ^
+      status.hashCode ^
+      voiceMessageDuration.hashCode ^
+      assetUrl.hashCode ^
+      unsent.hashCode ^
+      readAt.hashCode;
+
+  @override
+  String toString() {
+    return 'Message{id: $id, message: $message, createdAt: $createdAt, sendBy: $sendBy, replyMessage: $replyMessage, reactions: $reactions, messageType: $messageType, status: $status, voiceMessageDuration: $voiceMessageDuration, assetUrl: $assetUrl, unsent: $unsent, readAt: $readAt}';
   }
 }

@@ -20,7 +20,7 @@
 //         'reactedUserIds': reactedUserIds,
 //       };
 // }
-
+import 'package:collection/collection.dart';
 class Reactions {
   final List<UserReaction> _reactions;
   final String messageID;
@@ -45,6 +45,16 @@ class Reactions {
 
   int get reactionCount => reactions.length;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Reactions &&
+          runtimeType == other.runtimeType &&
+          const ListEquality().equals(reactions, other.reactions) &&
+          messageID == other.messageID;
+
+  @override
+  int get hashCode => _reactions.hashCode ^ messageID.hashCode;
 }
 
 class UserReactionElement {
@@ -57,6 +67,17 @@ class UserReactionElement {
   String toString() {
     return reaction;
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UserReactionElement &&
+          runtimeType == other.runtimeType &&
+          userID == other.userID &&
+          reaction == other.reaction;
+
+  @override
+  int get hashCode => userID.hashCode ^ reaction.hashCode;
 }
 
 class UserReaction {
@@ -65,4 +86,14 @@ class UserReaction {
 
   UserReaction(this.userID, this.reactions);
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UserReaction &&
+          runtimeType == other.runtimeType &&
+          userID == other.userID &&
+          const ListEquality().equals(reactions, other.reactions);
+
+  @override
+  int get hashCode => userID.hashCode ^ reactions.hashCode;
 }

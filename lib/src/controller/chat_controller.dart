@@ -21,13 +21,14 @@
  */
 import 'dart:async';
 
+import 'package:chatview/src/utils/message_notifier.dart';
 import 'package:flutter/material.dart';
 
 import '../models/models.dart';
 
 class ChatController {
   /// Represents initial message list in chat which can be add by user.
-  List<Message> initialMessageList;
+  List<MessageNotifier> initialMessageList;
 
   ScrollController scrollController;
 
@@ -88,40 +89,38 @@ class ChatController {
   ) onRemoveReact;
 
   /// Represents message stream of chat
-  StreamController<List<Message>> messageStreamController = StreamController();
+  StreamController<List<MessageNotifier>> messageStreamController = StreamController();
 
   /// Used to dispose stream.
   void dispose() => messageStreamController.close();
 
   /// Used to add message in message list.
   void addMessage(Message message) {
-    initialMessageList.add(message);
+    initialMessageList.add(MessageNotifier(message));
     messageStreamController.sink.add(initialMessageList);
   }
 
+
   // if message does not exist in list then add message in list at the top
   void updateMessageList(List<Message> messages) {
-    // final newList = [...initialMessageList];
-    // for (final message in messages) {
-    //   final index = newList.indexWhere((element) => element.id == message.id);
-    //   if (index != -1) {
-    //     newList[index] = message;
-    //   } else {
-    //     newList.add(message);
-    //   }
-    // }
-
-    final newList = [...messages];
-    for (final m in initialMessageList) {
-      final index = newList.indexWhere((element) => element.id == m.id);
-      if (index == -1) {
-        newList.add(m);
+    final nList = [...initialMessageList];
+    bool needToSink = false;
+    for (final message in messages) {
+      final mIndex = nList.indexWhere((element) => element.value.id == message.id);
+      if (mIndex == -1) {
+        needToSink = true;
+        nList.add(MessageNotifier(message));
+      } else if (!needToSink){
+        nList[mIndex].updateMessage(message);
       }
     }
 
-    initialMessageList = newList
-      ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
-    messageStreamController.sink.add(initialMessageList);
+    if (needToSink) {
+      nList.sort((a, b) => a.value.createdAt.compareTo(b.value.createdAt));
+      initialMessageList = nList;
+      messageStreamController.sink.add(initialMessageList);
+    }
+
   }
 
   /// Function for setting reaction on specific chat bubble
@@ -131,33 +130,6 @@ class ChatController {
     required String userId,
   }) {
     onReactionSet(emoji, messageId, userId);
-    // final message =
-    //     initialMessageList.firstWhere((element) => element.id == messageId);
-    // final reactedUserIds = message.reactions.reactedUserIds;
-    // final indexOfMessage = initialMessageList.indexOf(message);
-    // final userIndex = reactedUserIds.indexOf(userId);
-    // if (userIndex != -1) {
-    //   if (message.reactions.reactions[userIndex] == emoji) {
-    //     message.reactions.reactions.removeAt(userIndex);
-    //     message.reactions.reactedUserIds.removeAt(userIndex);
-    //   } else {
-    //     message.reactions.reactions[userIndex] = emoji;
-    //   }
-    // } else {
-    //   message.reactions.reactions.add(emoji);
-    //   message.reactions.reactedUserIds.add(userId);
-    // }
-    // initialMessageList[indexOfMessage] = Message(
-    //   id: messageId,
-    //   message: message.message,
-    //   createdAt: message.createdAt,
-    //   sendBy: message.sendBy,
-    //   replyMessage: message.replyMessage,
-    //   reactions: message.reactions,
-    //   messageType: message.messageType,
-    //   status: message.status,
-    // );
-    // messageStreamController.sink.add(initialMessageList);
   }
 
   /// Function to scroll to last messages in chat view
@@ -170,12 +142,12 @@ class ChatController {
         ),
       );
 
-  /// Function for loading data while pagination.
-  void loadMoreData(List<Message> messageList) {
-    /// Here, we have passed 0 index as we need to add data before first data
-    initialMessageList.insertAll(0, messageList);
-    messageStreamController.sink.add(initialMessageList);
-  }
+  // /// Function for loading data while pagination.
+  // void loadMoreData(List<Message> messageList) {
+  //   /// Here, we have passed 0 index as we need to add data before first data
+  //   initialMessageList.insertAll(0, messageList);
+  //   messageStreamController.sink.add(initialMessageList);
+  // }
 
   /// Function for getting ChatUser object from user id
   ChatUser getUserFromId(String userId) => chatUsers.firstWhere(
