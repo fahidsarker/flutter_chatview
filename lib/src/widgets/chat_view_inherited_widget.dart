@@ -19,6 +19,8 @@ class ChatViewInheritedWidget extends InheritedWidget {
       context.dependOnInheritedWidgetOfExactType<ChatViewInheritedWidget>();
 
   @override
-  bool updateShouldNotify(covariant ChatViewInheritedWidget oldWidget) =>
-      oldWidget.featureActiveConfig != featureActiveConfig;
+  bool updateShouldNotify(covariant ChatViewInheritedWidget oldWidget) {
+   final res = oldWidget.featureActiveConfig != featureActiveConfig;
+    return res;
+  }
 }

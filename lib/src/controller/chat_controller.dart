@@ -103,6 +103,7 @@ class ChatController {
 
   // if message does not exist in list then add message in list at the top
   void updateMessageList(List<Message> messages) {
+    debugPrint('Got Updated Message List: ${messages.length}');
     final nList = [...initialMessageList];
     bool needToSink = false;
     for (final message in messages) {

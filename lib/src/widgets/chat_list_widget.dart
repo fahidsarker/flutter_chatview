@@ -90,7 +90,7 @@ class ChatListWidget extends StatefulWidget {
   final TypeIndicatorConfiguration? typeIndicatorConfig;
 
   /// Provides reply message when user swipe to chat bubble.
-  final ReplyMessage replyMessage;
+  final ValueNotifier<ReplyMessage> replyMessage;
 
   /// Provides configuration for reply snack bar's appearance and options.
   final ReplyPopupConfiguration? replyPopupConfig;
@@ -115,6 +115,7 @@ class ChatListWidget extends StatefulWidget {
 
 class _ChatListWidgetState extends State<ChatListWidget>
     with SingleTickerProviderStateMixin {
+
   final ValueNotifier<bool> _isNextPageLoading = ValueNotifier<bool>(false);
   ValueNotifier<bool> showPopUp = ValueNotifier(false);
   final GlobalKey<ReactionPopupState> _reactionPopupKey = GlobalKey();
@@ -163,6 +164,7 @@ class _ChatListWidgetState extends State<ChatListWidget>
 
   @override
   Widget build(BuildContext context) {
+    print('ChatListWidget build');
     return Column(
       children: [
         ValueListenableBuilder<bool>(
@@ -220,9 +222,19 @@ class _ChatListWidgetState extends State<ChatListWidget>
               onChatListTap: _onChatListTap,
             ),
             builder: (_, showPopupValue, child) {
+              print('showPopupValue $showPopupValue');
               return Stack(
                 children: [
                   child!,
+                  if (showPopupValue)
+                    InkWell(
+                      onTap: _onChatListTap,
+                      child: const AbsorbPointer(
+                          child: SizedBox(
+                        height: double.infinity,
+                        width: double.infinity,
+                      )),
+                    ),
                   if (featureActiveConfig?.enableReactionPopup ?? false)
                     ReactionPopup(
                       key: _reactionPopupKey,

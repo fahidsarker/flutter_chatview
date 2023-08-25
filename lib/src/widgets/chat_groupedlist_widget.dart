@@ -78,7 +78,7 @@ class ChatGroupedListWidget extends StatefulWidget {
   final TypeIndicatorConfiguration? typeIndicatorConfig;
 
   /// Provides reply message if actual message is sent by replying any message.
-  final ReplyMessage replyMessage;
+  final ValueNotifier<ReplyMessage> replyMessage;
 
   /// Provides callback for assigning reply message when user swipe on chat bubble.
   final MessageCallBack assignReplyMessage;
@@ -160,6 +160,7 @@ class _ChatGroupedListWidgetState extends State<ChatGroupedListWidget>
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('rebuild ChatGroupedListWidget -- ');
     return SingleChildScrollView(
       reverse: true,
       // When reaction popup is being appeared at that user should not scroll.
@@ -207,9 +208,12 @@ class _ChatGroupedListWidgetState extends State<ChatGroupedListWidget>
                         showIndicator: value != null,
                         profilePic: value?.profilePhoto,
                       )),
-          SizedBox(
-            height: MediaQuery.of(context).size.width *
-                ((widget.replyMessage.message.isNotEmpty || widget.replyMessage.assetUrl.isNotEmpty) ? 0.3 : 0.14),
+          ValueListenableBuilder<ReplyMessage>(
+            valueListenable: widget.replyMessage,
+            builder: (_, replyMessage, __) => SizedBox(
+              height: MediaQuery.sizeOf(context).width *
+                  ((replyMessage.message.isNotEmpty || replyMessage.assetUrl.isNotEmpty) ? 0.3 : 0.14),
+            ),
           ),
         ],
       ),
@@ -278,7 +282,6 @@ class _ChatGroupedListWidgetState extends State<ChatGroupedListWidget>
     return StreamBuilder<List<MessageNotifier>>(
       stream: chatController?.messageStreamController.stream,
       builder: (context, snapshot) {
-        debugPrint('rebuild ChatGroupedListWidget');
         return snapshot.connectionState.isActive
             ? GroupedListView<MessageNotifier, String>(
                 shrinkWrap: true,

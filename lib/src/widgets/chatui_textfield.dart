@@ -155,7 +155,7 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
             children: [
               if (isRecordingValue && controller != null && !kIsWeb)
                 AudioWaveforms(
-                  size: Size(MediaQuery.of(context).size.width * 0.75, 50),
+                  size: Size(MediaQuery.sizeOf(context).width * 0.75, 50),
                   recorderController: controller!,
                   margin: voiceRecordingConfig?.margin,
                   padding: voiceRecordingConfig?.padding ??

@@ -132,7 +132,7 @@ class _MessageViewState extends State<MessageView>
   @override
   Widget build(BuildContext context) {
 
-    print("MessageView build");
+    print(".");
 
     return GestureDetector(
       onLongPressStart: isLongPressEnable ? _onLongPressStart : null,
