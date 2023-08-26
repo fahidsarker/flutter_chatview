@@ -21,6 +21,8 @@
  */
 import 'package:chatview/chatview.dart';
 import 'package:chatview/src/widgets/chat_view_inherited_widget.dart';
+import 'package:chatview/src/widgets/download_state.dart';
+import 'package:chatview/src/widgets/message_unsent_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'package:chatview/src/extensions/extensions.dart';
@@ -132,7 +134,7 @@ class _MessageViewState extends State<MessageView>
   @override
   Widget build(BuildContext context) {
 
-    print(".");
+    debugPrint("MessageView.build()");
 
     return GestureDetector(
       onLongPressStart: isLongPressEnable ? _onLongPressStart : null,
@@ -181,17 +183,12 @@ class _MessageViewState extends State<MessageView>
               (() {
                 if (data.unsent) {
                   return TextMessageView(
-                    inComingChatBubbleConfig: widget.inComingChatBubbleConfig
-                        ?.copyWith(color: Colors.black),
-                    outgoingChatBubbleConfig: widget.outgoingChatBubbleConfig
-                        ?.copyWith(color: Colors.black),
+                    inComingChatBubbleConfig: widget.inComingChatBubbleConfig,
+                    outgoingChatBubbleConfig: widget.outgoingChatBubbleConfig,
                     isMessageBySender: widget.isMessageBySender,
-                    message: Message(
-                      id: data.id,
+                    message: data.copyWith(
                       message: 'Message Unsent',
-                      createdAt: data.createdAt,
-                      sendBy: data.sendBy,
-                      status: data.status,
+                      messageType: MessageType.text,
                     ),
                     chatBubbleMaxWidth: widget.chatBubbleMaxWidth,
                     messageReactionConfig: messageConfig?.messageReactionConfig,
@@ -199,7 +196,7 @@ class _MessageViewState extends State<MessageView>
                     highlightMessage: widget.shouldHighlight,
                     isUnsent: true,
                   );
-                } else if (message.isAllEmoji) {
+                } else if (message.isAllEmoji && message.length < 5) {
                   return Stack(
                     clipBehavior: Clip.none,
                     children: [
@@ -233,7 +230,10 @@ class _MessageViewState extends State<MessageView>
                         ),
                     ],
                   );
-                } else if (data.messageType.isImage) {
+                } else if (data.assetDownloadRequired){
+                  return DownloadRequired(height: 200, width: 150, message: data, controller: widget.controller, messageConfiguration: messageConfig,);
+                }
+                else if (data.messageType.isImage) {
                   return ImageMessageView(
                     message: data,
                     censoredNotifier: widget.controller?.enabledCensoredModeNotifier ?? ValueNotifier<bool>(false),

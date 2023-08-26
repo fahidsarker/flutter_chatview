@@ -79,14 +79,18 @@ class TextMessageView extends StatelessWidget {
           constraints: BoxConstraints(
               maxWidth: chatBubbleMaxWidth ??
                   MediaQuery.of(context).size.width * 0.75),
-          padding: _padding ??
-               EdgeInsets.symmetric(
+          padding: (isUnsent ? null : _padding) ??
+              EdgeInsets.symmetric(
                 horizontal: isUnsent ? 8 : 12,
                 vertical: isUnsent ? 5 : 10,
               ),
           margin: _margin ??
               EdgeInsets.fromLTRB(
-                  5, 0, 6, message.reactions.reactions.isNotEmpty ? 15 : 2),
+                5,
+                0,
+                6,
+                message.reactions.reactions.isNotEmpty ? 15 : 2,
+              ),
           decoration: BoxDecoration(
             color: highlightMessage ? highlightColor : _color,
             borderRadius: _borderRadius(textMessage),
@@ -98,15 +102,17 @@ class TextMessageView extends StatelessWidget {
                 )
               : Text(
                   textMessage,
-                  style: _textStyle ??
-                      textTheme.bodyMedium!.copyWith(
-                        color: Colors.white,
-                        fontSize: isUnsent ? 12 : 16,
-                        fontStyle: isUnsent ? FontStyle.italic : null
-                      ),
+                  style: isUnsent
+                      ? _unsentTextStyle
+                      : _textStyle ??
+                          textTheme.bodyMedium!.copyWith(
+                            color: Colors.white,
+                            fontSize: isUnsent ? 12 : 16,
+                            fontStyle: isUnsent ? FontStyle.italic : null,
+                          ),
                 ),
         ),
-        if (message.reactions.reactions.isNotEmpty)
+        if (message.reactions.reactions.isNotEmpty && !message.unsent)
           ReactionWidget(
             key: key,
             isMessageBySender: isMessageBySender,
@@ -132,6 +138,11 @@ class TextMessageView extends StatelessWidget {
   TextStyle? get _textStyle => isMessageBySender
       ? outgoingChatBubbleConfig?.textStyle
       : inComingChatBubbleConfig?.textStyle;
+
+  TextStyle? get _unsentTextStyle => _textStyle?.copyWith(
+        fontStyle: FontStyle.italic,
+        color: Colors.grey.shade500,
+      );
 
   BorderRadiusGeometry _borderRadius(String message) => isMessageBySender
       ? outgoingChatBubbleConfig?.borderRadius ??

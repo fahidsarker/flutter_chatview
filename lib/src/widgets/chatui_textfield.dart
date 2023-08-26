@@ -73,7 +73,6 @@ class ChatUITextField extends StatefulWidget {
 class _ChatUITextFieldState extends State<ChatUITextField> {
   final ValueNotifier<String> _inputText = ValueNotifier('');
 
-
   RecorderController? controller;
 
   ValueNotifier<bool> isRecording = ValueNotifier(false);
@@ -95,14 +94,15 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
             BorderRadius.circular(textFieldBorderRadius),
       );
 
-
   ValueNotifier<TypeWriterStatus> composingStatus =
       ValueNotifier(TypeWriterStatus.typed);
 
   late Debouncer debouncer;
 
-  void onFocusChange(){
-    composingStatus.value = widget.focusNode.hasFocus ? TypeWriterStatus.typing : TypeWriterStatus.typed;
+  void onFocusChange() {
+    composingStatus.value = widget.focusNode.hasFocus
+        ? TypeWriterStatus.typing
+        : TypeWriterStatus.typed;
   }
 
   @override
@@ -293,17 +293,21 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
   void _pickMedia() async {
     try {
       FocusManager.instance.primaryFocus?.unfocus();
-      final medias = await HLImagePicker()
-          .openPicker(pickerOptions: HLPickerOptions(maxSelectedAssets: 5));
+      var medias = (await HLImagePicker().openPicker(
+              pickerOptions: HLPickerOptions(
+        maxSelectedAssets: 5,
+        maxDuration: 5 * 60,
+        convertHeicToJPG: true,
+        convertLivePhotosToJPG: true,
+        recordVideoMaxSecond: 5 * 60,
+      )))
+          .map((e) => (
+                e.path,
+                e.type == 'image' ? MessageType.image : MessageType.video
+              ))
+          .toList();
 
-      widget.onMediasSelected(
-          medias
-              .map((e) => (
-                    e.path,
-                    e.type == 'image' ? MessageType.image : MessageType.video
-                  ))
-              .toList(),
-          '');
+      widget.onMediasSelected(medias, '');
     } catch (e) {
       widget.onMediasSelected([], e.toString());
     }

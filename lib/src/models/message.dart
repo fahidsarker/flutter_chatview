@@ -23,7 +23,7 @@ import 'package:chatview/chatview.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
-class Message {
+abstract class Message {
   /// Provides id
   final String id;
 
@@ -59,6 +59,8 @@ class Message {
 
   final GlobalKey key;
 
+  final bool assetDownloadRequired;
+
   Message({
     required this.id,
     required this.message,
@@ -72,6 +74,7 @@ class Message {
     required this.status,
     this.unsent = false,
     this.readAt,
+    this.assetDownloadRequired = false,
   })  : key = GlobalKey(),
         reactions = reactions ?? Reactions(id, []),
         assert(
@@ -91,75 +94,9 @@ class Message {
     String? assetUrl,
     ReplyMessage? replyMessage,
     MessageStatus? status,
-  }) {
-    return Message(
-      id: id,
-      message: message ?? this.message,
-      createdAt: createdAt,
-      sendBy: sendBy,
-      replyMessage: replyMessage ?? this.replyMessage,
-      reactions: reactions,
-      messageType: messageType,
-      voiceMessageDuration: voiceMessageDuration,
-      status: status ?? this.status,
-      assetUrl: assetUrl ?? this.assetUrl,
-    );
-  }
-
-  /// returns values which are different from other message
-  List<dynamic> differentFrom(Message other) {
-    final list = <dynamic>[];
-    if (message != other.message) {
-      list.add(message);
-    }
-    if (assetUrl != other.assetUrl) {
-      list.add(assetUrl);
-    }
-    if (replyMessage != other.replyMessage) {
-      list.add(replyMessage);
-    }
-    if (status != other.status) {
-      list.add(status);
-    }
-
-    if (reactions != other.reactions) {
-      list.add(reactions);
-    }
-
-    if (messageType != other.messageType) {
-      list.add(messageType);
-    }
-
-    if (voiceMessageDuration != other.voiceMessageDuration) {
-      list.add(voiceMessageDuration);
-    }
-
-    if (createdAt != other.createdAt) {
-      list.add(createdAt);
-    }
-
-    if (sendBy != other.sendBy) {
-      list.add(sendBy);
-    }
-
-    if (id != other.id) {
-      list.add(id);
-    }
-
-    if (unsent != other.unsent) {
-      list.add(unsent);
-    }
-
-    if (readAt != other.readAt) {
-      list.add(readAt);
-    }
-
-    if (key != other.key) {
-      list.add(key);
-    }
-
-    return list;
-  }
+    MessageType? messageType,
+    bool? assetDownloadRequired
+  });
 
   @override
   bool operator ==(Object other) =>

@@ -100,6 +100,16 @@ extension MessageTypes on MessageType {
 
   bool get containsAsset => isImage || isVoice || isVideo;
 
+  IconData get icon => isImage
+      ? Icons.image
+      : isText
+          ? Icons.text_fields
+          : isVoice
+              ? Icons.mic
+              : isVideo
+                  ? Icons.movie
+                  : Icons.error;
+
 }
 
 /// Extension on ConnectionState for checking specific connection.

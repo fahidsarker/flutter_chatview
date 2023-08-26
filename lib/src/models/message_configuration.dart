@@ -43,6 +43,9 @@ class MessageConfiguration {
   /// Configurations for voice message bubble
   final VoiceMessageConfiguration? voiceMessageConfig;
 
+  final Color? toDownloadBack;
+  final Color? toDownloadIcon;
+
   const MessageConfiguration({
     this.imageMessageConfig,
     this.messageReactionConfig,
@@ -50,5 +53,7 @@ class MessageConfiguration {
     this.customMessageBuilder,
     this.voiceMessageConfig,
     this.preprocessMessage,
+    this.toDownloadBack,
+    this.toDownloadIcon,
   });
 }

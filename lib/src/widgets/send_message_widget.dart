@@ -43,9 +43,10 @@ class SendMessageWidget extends StatefulWidget {
     this.onReplyCloseCallback,
   }) : super(key: key);
 
-
   /// Provides call back when user tap on send button on text field.
-  final StringMessageCallBack onSendTap;
+  final void Function(
+          List<(String path, MessageType type)>, ReplyMessage replyMessage)
+      onSendTap;
 
   /// Provides configuration for text field appearance.
   final SendMessageConfiguration? sendMessageConfig;
@@ -309,7 +310,7 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
 
   void _onRecordingComplete(String? path) {
     if (path != null) {
-      widget.onSendTap.call(path, replyMessage, MessageType.voice);
+      widget.onSendTap.call([(path, MessageType.voice)], replyMessage);
       _assignRepliedMessage();
     }
   }
@@ -322,14 +323,16 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
   //   }
   // }
 
-  void _onMediaSelectedSelected(List<(String path, MessageType type)> medias, String error) {
-    debugPrint('Call in Send Message Widget');
-    for (final media in medias){
-    if (media.$1.isNotEmpty) {
-    widget.onSendTap.call(media.$1, replyMessage, media.$2);
-    _assignRepliedMessage();
-    }
-  }
+  void _onMediaSelectedSelected(
+      List<(String path, MessageType type)> medias, String error) {
+    // debugPrint('Call in Send Message Widget');
+    //   for (final media in medias){
+//   if (media.$1.isNotEmpty) {
+//     widget.onSendTap.call(media.$1, replyMessage, media.$2);
+//     _assignRepliedMessage();
+//   }
+// }
+    widget.onSendTap.call(medias, replyMessage);
   }
 
   void _assignRepliedMessage() {
@@ -342,9 +345,8 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
     if (_textEditingController.text.isNotEmpty &&
         !_textEditingController.text.startsWith('\n')) {
       widget.onSendTap.call(
-        _textEditingController.text.trim(),
+        [(_textEditingController.text.trim(), MessageType.text)],
         replyMessage,
-        MessageType.text,
       );
       _assignRepliedMessage();
       _textEditingController.clear();

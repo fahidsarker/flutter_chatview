@@ -64,6 +64,19 @@ class ChatController {
           ? null
           : chatUsers.firstWhere((element) => element.id == userID);
 
+  final Future<String?> Function(Message message)
+      _downloadAndDecryptMessageAsset;
+
+  Future downloadAndDecryptMessageAsset(Message message) async {
+    final newPath = await _downloadAndDecryptMessageAsset(message);
+    updateMessageList([
+      message.copyWith(
+        assetUrl: newPath,
+        assetDownloadRequired: newPath == null,
+      )
+    ]);
+  }
+
   /// Represents list of chat users
   List<ChatUser> chatUsers;
 
@@ -73,8 +86,9 @@ class ChatController {
     required this.chatUsers,
     required this.onReactionSet,
     required this.onRemoveReact,
+    required Future<String?> Function(Message message) downloadAndDecryptMessageAsset,
     required this.currentUser,
-  });
+  }) : _downloadAndDecryptMessageAsset = downloadAndDecryptMessageAsset;
 
   final Function(
     String emoji,
@@ -89,7 +103,8 @@ class ChatController {
   ) onRemoveReact;
 
   /// Represents message stream of chat
-  StreamController<List<MessageNotifier>> messageStreamController = StreamController();
+  StreamController<List<MessageNotifier>> messageStreamController =
+      StreamController();
 
   /// Used to dispose stream.
   void dispose() => messageStreamController.close();
@@ -100,18 +115,18 @@ class ChatController {
     messageStreamController.sink.add(initialMessageList);
   }
 
-
   // if message does not exist in list then add message in list at the top
   void updateMessageList(List<Message> messages) {
     debugPrint('Got Updated Message List: ${messages.length}');
     final nList = [...initialMessageList];
     bool needToSink = false;
     for (final message in messages) {
-      final mIndex = nList.indexWhere((element) => element.value.id == message.id);
+      final mIndex =
+          nList.indexWhere((element) => element.value.id == message.id);
       if (mIndex == -1) {
         needToSink = true;
         nList.add(MessageNotifier(message));
-      } else if (!needToSink){
+      } else if (!needToSink) {
         nList[mIndex].updateMessage(message);
       }
     }
@@ -121,7 +136,6 @@ class ChatController {
       initialMessageList = nList;
       messageStreamController.sink.add(initialMessageList);
     }
-
   }
 
   /// Function for setting reaction on specific chat bubble
@@ -162,5 +176,4 @@ class ChatController {
   bool get enabledCensoredMode => _enabledCensoredMode.value;
 
   set enabledCensoredMode(bool value) => _enabledCensoredMode.value = value;
-
 }

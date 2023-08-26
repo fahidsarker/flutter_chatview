@@ -33,3 +33,4 @@ export 'package:audio_waveforms/audio_waveforms.dart'
 export 'src/models/receipts_widget_config.dart';
 export 'src/extensions/extensions.dart' show MessageTypes;
 export 'src/widgets/image_message_view.dart';
+export 'src/extensions/extensions.dart';

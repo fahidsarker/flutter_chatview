@@ -100,7 +100,7 @@ class ChatView extends StatefulWidget {
 
   /// Provides call back when user tap on send button in text field. It returns
   /// message, reply message and message type.
-  final StringMessageCallBack? onSendTap;
+  final Function(List<(String, MessageType)>, ReplyMessage)? onSendTap;
 
   /// Provides builder which helps you to make custom text field and functionality.
   final ReplyMessageWithReturnWidget? sendMessageBuilder;
@@ -275,13 +275,12 @@ class _ChatViewState extends State<ChatView>
   }
 
   void _onSendTap(
-    String message,
+    List<(String, MessageType)> messages,
     ReplyMessage replyMessage,
-    MessageType messageType,
   ) {
     if (widget.sendMessageBuilder == null) {
       if (widget.onSendTap != null) {
-        widget.onSendTap!(message, replyMessage, messageType);
+        widget.onSendTap!(messages, replyMessage);
       }
       _assignReplyMessage();
     }

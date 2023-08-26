@@ -30,7 +30,7 @@ import 'package:flutter/material.dart';
 import 'reaction_widget.dart';
 import 'share_icon.dart';
 
-class ImageMessageView extends StatelessWidget {
+class ImageMessageView extends StatefulWidget {
   const ImageMessageView({
     Key? key,
     required this.message,
@@ -62,49 +62,52 @@ class ImageMessageView extends StatelessWidget {
   /// Provides scale of highlighted image when user taps on replied image.
   final double highlightScale;
 
-  String get imageUrl => message.assetUrl;
 
-  Widget get iconButton => ShareIcon(
-        shareIconConfig: imageMessageConfig?.shareIconConfig,
-        imageUrl: imageUrl,
-      );
+  @override
+  State<ImageMessageView> createState() => _ImageMessageViewState();
+}
+
+class _ImageMessageViewState extends State<ImageMessageView> {
+  String get imageUrl => widget.message.assetUrl;
+
+  Widget get iconButton => IconButton(onPressed: (){}, icon: Icon(Icons.emoji_emotions_outlined));
 
   @override
   Widget build(BuildContext context) {
-    final height= imageMessageConfig?.height ?? 200;
-    final width= imageMessageConfig?.width ?? 150;
+    final height= widget.imageMessageConfig?.height ?? 200;
+    final width= widget.imageMessageConfig?.width ?? 150;
     return Row(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment:
-          isMessageBySender ? MainAxisAlignment.end : MainAxisAlignment.start,
+          widget.isMessageBySender ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
-        if (isMessageBySender) iconButton,
+        // if (widget.isMessageBySender) iconButton,
         Stack(
           children: [
             GestureDetector(
-              onTap: () => imageMessageConfig?.onTap != null
-                  ? imageMessageConfig?.onTap!(imageUrl)
+              onTap: () => widget.imageMessageConfig?.onTap != null
+                  ? widget.imageMessageConfig?.onTap!(imageUrl)
                   : null,
               child: Transform.scale(
-                scale: highlightImage ? highlightScale : 1.0,
-                alignment: isMessageBySender
+                scale: widget.highlightImage ? widget.highlightScale : 1.0,
+                alignment: widget.isMessageBySender
                     ? Alignment.centerRight
                     : Alignment.centerLeft,
                 child: Container(
-                  padding: imageMessageConfig?.padding ?? EdgeInsets.zero,
-                  margin: imageMessageConfig?.margin ??
+                  padding: widget.imageMessageConfig?.padding ?? EdgeInsets.zero,
+                  margin: widget.imageMessageConfig?.margin ??
                       EdgeInsets.only(
                         top: 6,
-                        right: isMessageBySender ? 6 : 0,
-                        left: isMessageBySender ? 0 : 6,
-                        bottom: message.reactions.reactions.isNotEmpty ? 15 : 0,
+                        right: widget.isMessageBySender ? 6 : 0,
+                        left: widget.isMessageBySender ? 0 : 6,
+                        bottom: widget.message.reactions.reactions.isNotEmpty ? 15 : 0,
                       ),
                   height: height,
                   width: width,
                   child: ClipRRect(
-                    borderRadius: imageMessageConfig?.borderRadius ?? BorderRadius.circular(14),
+                    borderRadius: widget.imageMessageConfig?.borderRadius ?? BorderRadius.circular(14),
                     child: ValueListenableBuilder<bool>(
-                      valueListenable: censoredNotifier,
+                      valueListenable: widget.censoredNotifier,
                       child: (() {
                         if (imageUrl.isUrl) {
                           return Image.network(
@@ -127,12 +130,12 @@ class ImageMessageView extends StatelessWidget {
                           return Image.memory(
                             base64Decode(imageUrl
                                 .substring(imageUrl.indexOf('base64') + 7)),
-                            fit: BoxFit.fill,
+                            fit: BoxFit.cover,
                           );
                         } else {
                           return Image.file(
                             File(imageUrl),
-                            fit: BoxFit.fill,
+                            fit: BoxFit.cover,
                           );
                         }
                       }()),
@@ -144,15 +147,15 @@ class ImageMessageView extends StatelessWidget {
                 ),
               ),
             ),
-            if (message.reactions.reactions.isNotEmpty)
+            if (widget.message.reactions.reactions.isNotEmpty)
               ReactionWidget(
-                isMessageBySender: isMessageBySender,
-                reaction: message.reactions,
-                messageReactionConfig: messageReactionConfig,
+                isMessageBySender: widget.isMessageBySender,
+                reaction: widget.message.reactions,
+                messageReactionConfig: widget.messageReactionConfig,
               ),
           ],
         ),
-        if (!isMessageBySender) iconButton,
+        // if (!widget.isMessageBySender) iconButton,
       ],
     );
   }
