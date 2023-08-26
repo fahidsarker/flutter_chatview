@@ -86,7 +86,7 @@ class _ImageMessageViewState extends State<ImageMessageView> {
           children: [
             GestureDetector(
               onTap: () => widget.imageMessageConfig?.onTap != null
-                  ? widget.imageMessageConfig?.onTap!(imageUrl)
+                  ? widget.imageMessageConfig?.onTap!(context, widget.message)
                   : null,
               child: Transform.scale(
                 scale: widget.highlightImage ? widget.highlightScale : 1.0,

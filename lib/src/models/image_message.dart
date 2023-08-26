@@ -21,6 +21,7 @@
  */
 import 'package:flutter/material.dart';
 
+import '../../chatview.dart';
 import '../values/typedefs.dart';
 
 class ImageMessageConfiguration {
@@ -28,7 +29,7 @@ class ImageMessageConfiguration {
   final ShareIconConfiguration? shareIconConfig;
 
   /// Provides callback when user taps on image message.
-  final StringCallback? onTap;
+  final void Function(BuildContext, Message)? onTap;
 
   /// Used for giving height of image message.
   final double? height;
