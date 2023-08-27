@@ -61,6 +61,8 @@ abstract class Message {
 
   final bool assetDownloadRequired;
 
+  final String? belongsToGroupOf;
+
 
   Message({
     required this.id,
@@ -76,6 +78,7 @@ abstract class Message {
     this.unsent = false,
     this.readAt,
     this.assetDownloadRequired = false,
+    this.belongsToGroupOf,
   })  : key = GlobalKey(),
         reactions = reactions ?? Reactions(id, []),
         assert(
