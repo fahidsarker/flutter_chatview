@@ -31,6 +31,10 @@ import 'reaction_widget.dart';
 import 'share_icon.dart';
 
 class ImageMessageView extends StatefulWidget {
+
+  static const thumbnailHeight = 200.0;
+  static const thumbnailWidth = 150.0;
+
   const ImageMessageView({
     Key? key,
     required this.message,
@@ -40,6 +44,7 @@ class ImageMessageView extends StatefulWidget {
     this.highlightImage = false,
     this.highlightScale = 1.2,
     required this.censoredNotifier,
+    this.messageConfiguration,
   }) : super(key: key);
 
   final ValueNotifier<bool> censoredNotifier;
@@ -62,6 +67,8 @@ class ImageMessageView extends StatefulWidget {
   /// Provides scale of highlighted image when user taps on replied image.
   final double highlightScale;
 
+  final MessageConfiguration? messageConfiguration;
+
 
   @override
   State<ImageMessageView> createState() => _ImageMessageViewState();
@@ -74,8 +81,8 @@ class _ImageMessageViewState extends State<ImageMessageView> {
 
   @override
   Widget build(BuildContext context) {
-    final height= widget.imageMessageConfig?.height ?? 200;
-    final width= widget.imageMessageConfig?.width ?? 150;
+    final height= widget.imageMessageConfig?.height ?? ImageMessageView.thumbnailHeight;
+    final width= widget.imageMessageConfig?.width ?? ImageMessageView.thumbnailWidth;
     return Row(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment:
@@ -140,7 +147,7 @@ class _ImageMessageViewState extends State<ImageMessageView> {
                         }
                       }()),
                       builder: (_, value, child) {
-                        return value ?  Censored(height: height, width: width,) : child!;
+                        return value ?  Censored(type: widget.message.messageType, height: height, width: width, messageConfiguration: widget.messageConfiguration,) : child!;
                       },
                     ),
                   ),

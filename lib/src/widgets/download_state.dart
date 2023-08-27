@@ -9,6 +9,7 @@ class DownloadRequired extends StatefulWidget {
   final Message message;
   final ChatController? controller;
   final MessageConfiguration? messageConfiguration;
+  final bool isMessageBySender;
 
   const DownloadRequired({
     super.key,
@@ -17,6 +18,7 @@ class DownloadRequired extends StatefulWidget {
     required this.message,
     required this.controller,
     required this.messageConfiguration,
+    required this.isMessageBySender,
   });
 
   @override
@@ -31,9 +33,15 @@ class _DownloadRequiredState extends State<DownloadRequired> {
     return Container(
         height: widget.height,
         width: widget.width,
+        margin: widget.messageConfiguration?.imageMessageConfig?.margin ??
+            EdgeInsets.only(
+              top: 6,
+              right: widget.isMessageBySender ? 6 : 0,
+              left: widget.isMessageBySender ? 0 : 6,
+              bottom: widget.message.reactions.reactions.isNotEmpty ? 15 : 0,
+            ),
         decoration: BoxDecoration(
-          color:
-              widget.messageConfiguration?.toDownloadBack ?? Colors.grey[300],
+          color: widget.messageConfiguration?.toDownloadBack ?? Colors.grey[300],
           borderRadius: BorderRadius.circular(10),
         ),
         child: Stack(

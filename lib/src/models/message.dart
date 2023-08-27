@@ -61,6 +61,7 @@ abstract class Message {
 
   final bool assetDownloadRequired;
 
+
   Message({
     required this.id,
     required this.message,

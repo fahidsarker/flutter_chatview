@@ -1,27 +1,48 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+
+import '../../chatview.dart';
 
 class Censored extends StatelessWidget {
   final double? height;
   final double? width;
+  final MessageType type;
+  final MessageConfiguration? messageConfiguration;
 
-  const Censored({
-    Key? key,
-    this.height,
-    this.width,
-  }) : super(key: key);
+  const Censored(
+      {Key? key,
+      this.height,
+      this.width,
+      this.messageConfiguration,
+      required this.type})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: height,
       width: width,
-      color: Colors.grey[300],
-      child: Center(
-        child: Icon(
-          Icons.lock,
-          color: Colors.grey[500],
-          size: 30,
-        ),
+      decoration: BoxDecoration(
+        color: messageConfiguration?.toDownloadBack ?? Colors.grey[300],
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Opacity(
+            opacity: 0.1,
+            child: Icon(
+              type.icon,
+              size: min(height ?? 0, width ?? 0) * 0.9,
+            ),
+          ),
+          Icon(
+            Icons.lock,
+            color: messageConfiguration?.toDownloadIcon ?? Colors.black,
+            size: min(height ?? 0, width ?? 0) * 0.4,
+          ),
+        ],
       ),
     );
   }

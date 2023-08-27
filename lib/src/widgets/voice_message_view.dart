@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:chatview/chatview.dart';
-import 'package:chatview/src/models/voice_message_configuration.dart';
 import 'package:chatview/src/widgets/reaction_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -109,14 +108,14 @@ class _VoiceMessageViewState extends State<VoiceMessageView> {
                     icon:
                         state.isStopped || state.isPaused || state.isInitialised
                             ? widget.config?.playIcon ??
-                                const Icon(
+                                 Icon(
                                   Icons.play_arrow,
-                                  color: Colors.white,
+                                  color:  _iconColor,
                                 )
                             : widget.config?.pauseIcon ??
-                                const Icon(
+                                 Icon(
                                   Icons.stop,
-                                  color: Colors.white,
+                                  color: _iconColor,
                                 ),
                   );
                 },
@@ -126,8 +125,10 @@ class _VoiceMessageViewState extends State<VoiceMessageView> {
                 size: Size(widget.screenWidth * 0.50, 60),
                 playerController: controller,
                 waveformType: WaveformType.fitWidth,
-                playerWaveStyle:
-                    widget.config?.playerWaveStyle ?? playerWaveStyle,
+                playerWaveStyle: PlayerWaveStyle(
+                  fixedWaveColor: _iconColor.withOpacity(0.3),
+                  liveWaveColor: _iconColor,
+                ),
                 padding: widget.config?.waveformPadding ??
                     const EdgeInsets.only(right: 10),
                 margin: widget.config?.waveformMargin,
@@ -147,6 +148,16 @@ class _VoiceMessageViewState extends State<VoiceMessageView> {
           ),
       ],
     );
+  }
+
+  Color get _iconColor {
+    if (widget.isMessageBySender) {
+      return widget.outgoingChatBubbleConfig?.textStyle?.color ??
+          Theme.of(context).primaryColor;
+    } else {
+      return widget.inComingChatBubbleConfig?.textStyle?.color ??
+          Theme.of(context).primaryColor;
+    }
   }
 
   void _playOrPause() {
