@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:chatview/chatview.dart';
-import 'package:chatview/src/widgets/download_state.dart';
 import 'package:chatview/src/widgets/reaction_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:video_thumbnail/video_thumbnail.dart' as vt;
@@ -22,7 +21,7 @@ class VideoPlayerThumbnail extends StatelessWidget {
 
   Future<Uint8List?> _getThumbnailData() async {
     return await vt.VideoThumbnail.thumbnailData(
-      video: message.assetUrl,
+      video: message.assets[0].url,
       imageFormat: vt.ImageFormat.JPEG,
       quality: 50,
     );
@@ -33,9 +32,10 @@ class VideoPlayerThumbnail extends StatelessWidget {
     final width = imageMessageConfig?.width ?? ImageMessageView.thumbnailWidth;
     final height =
         imageMessageConfig?.height ?? ImageMessageView.thumbnailHeight;
+    final asset = message.assets[0];
 
     return InkWell(
-      onTap: () => imageMessageConfig?.onTap?.call(context, message),
+      onTap: () => imageMessageConfig?.onTap?.call(context, asset),
       child: Stack(
         children: [
           Container(
@@ -58,7 +58,7 @@ class VideoPlayerThumbnail extends StatelessWidget {
                       color: Colors.grey[300],
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Stack(
+                    child: const Stack(
                       alignment: Alignment.center,
                       children: [
                         Opacity(

@@ -21,6 +21,7 @@
  */
 import 'dart:async';
 
+import 'package:chatview/chatview.dart';
 import 'package:chatview/src/utils/message_notifier.dart';
 import 'package:flutter/material.dart';
 
@@ -64,15 +65,15 @@ class ChatController {
           ? null
           : chatUsers.firstWhere((element) => element.id == userID);
 
-  final Future<String?> Function(Message message)
+  final Future<List<AssetModel>> Function(Message message)
       _downloadAndDecryptMessageAsset;
 
   Future downloadAndDecryptMessageAsset(Message message) async {
-    final newPath = await _downloadAndDecryptMessageAsset(message);
+    final newAssets = await _downloadAndDecryptMessageAsset(message);
     updateMessageList([
       message.copyWith(
-        assetUrl: newPath,
-        assetDownloadRequired: newPath == null,
+        assets: newAssets,
+        // assetDownloadRequired: newAssets.isEmpty
       )
     ]);
   }
@@ -86,7 +87,7 @@ class ChatController {
     required this.chatUsers,
     required this.onReactionSet,
     required this.onRemoveReact,
-    required Future<String?> Function(Message message) downloadAndDecryptMessageAsset,
+    required Future<List<AssetModel>> Function(Message message) downloadAndDecryptMessageAsset,
     required this.currentUser,
   }) : _downloadAndDecryptMessageAsset = downloadAndDecryptMessageAsset;
 

@@ -1,5 +1,6 @@
 import 'package:chatview/chatview.dart';
 import 'package:chatview/src/widgets/chat_view_inherited_widget.dart';
+import 'package:chatview/src/widgets/compound_message_view.dart';
 import 'package:chatview/src/widgets/download_state.dart';
 import 'package:chatview/src/widgets/video_player_thumbnail.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,6 @@ import 'image_message_view.dart';
 import 'text_message_view.dart';
 import 'reaction_widget.dart';
 import 'voice_message_view.dart';
-
 
 class MessageView extends StatefulWidget {
   const MessageView({
@@ -112,7 +112,7 @@ class _MessageViewState extends State<MessageView>
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("MessageView.build()");
+    debugPrint(widget.message.messageType.toString());
 
     return GestureDetector(
       onLongPressStart: isLongPressEnable ? _onLongPressStart : null,
@@ -168,7 +168,7 @@ class _MessageViewState extends State<MessageView>
                           isMessageBySender: widget.isMessageBySender,
                           message: data.copyWith(
                             message: 'Message Unsent',
-                            messageType: MessageType.text,
+                            // messageType: MessageType.text,
                           ),
                           chatBubbleMaxWidth: widget.chatBubbleMaxWidth,
                           messageReactionConfig:
@@ -268,7 +268,21 @@ class _MessageViewState extends State<MessageView>
                           isMessageBySender: widget.isMessageBySender,
                           imageMessageConfig:
                               widget.messageConfig?.imageMessageConfig,
-                          messageReactionConfig: widget.messageConfig?.messageReactionConfig,
+                          messageReactionConfig:
+                              widget.messageConfig?.messageReactionConfig,
+                        );
+                      } else if (data.messageType.isCompound) {
+                        return CompoundMessageView(
+                          message: data.copyWith(
+                            // assets: [data.assets[0], data.assets[1]],
+                          ),
+                          isMessageBySender: widget.isMessageBySender,
+                          imageMessageConfig:
+                              widget.messageConfig?.imageMessageConfig,
+                          messageReactionConfig:
+                              widget.messageConfig?.messageReactionConfig,
+                          inComingChatBubbleConfig: widget.inComingChatBubbleConfig,
+                          outgoingChatBubbleConfig: widget.outgoingChatBubbleConfig,
                         );
                       } else if (data.messageType.isCustom &&
                           messageConfig?.customMessageBuilder != null) {

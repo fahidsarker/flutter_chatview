@@ -45,7 +45,7 @@ class SendMessageWidget extends StatefulWidget {
 
   /// Provides call back when user tap on send button on text field.
   final void Function(
-          List<(String path, MessageType type)>, ReplyMessage replyMessage)
+          String, List<RawAsset>, ReplyMessage)
       onSendTap;
 
   /// Provides configuration for text field appearance.
@@ -310,7 +310,7 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
 
   void _onRecordingComplete(String? path) {
     if (path != null) {
-      widget.onSendTap.call([(path, MessageType.voice)], replyMessage);
+      widget.onSendTap.call('',  [RawAsset(url: path, type: MessageType.voice)], replyMessage);
       _assignRepliedMessage();
     }
   }
@@ -325,14 +325,7 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
 
   void _onMediaSelectedSelected(
       List<(String path, MessageType type)> medias, String error) {
-    // debugPrint('Call in Send Message Widget');
-    //   for (final media in medias){
-//   if (media.$1.isNotEmpty) {
-//     widget.onSendTap.call(media.$1, replyMessage, media.$2);
-//     _assignRepliedMessage();
-//   }
-// }
-    widget.onSendTap.call(medias, replyMessage);
+    widget.onSendTap.call('', medias.map((e) => RawAsset(url: e.$1, type: e.$2)).toList(), replyMessage);
   }
 
   void _assignRepliedMessage() {
@@ -345,7 +338,8 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
     if (_textEditingController.text.isNotEmpty &&
         !_textEditingController.text.startsWith('\n')) {
       widget.onSendTap.call(
-        [(_textEditingController.text.trim(), MessageType.text)],
+        _textEditingController.text.trim(),
+        [],
         replyMessage,
       );
       _assignRepliedMessage();
@@ -354,15 +348,16 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
   }
 
   void assignReplyMessage(Message message) {
+    final AssetModel? asset = message.assets.isNotEmpty ? message.assets.first : null;
     if (currentUser != null) {
       _replyMessage.value = ReplyMessage(
         message: message.message,
         replyBy: currentUser!.id,
         replyTo: message.sendBy,
-        messageType: message.messageType,
+        messageType: asset?.type ?? MessageType.text,
         messageId: message.id,
-        voiceMessageDuration: message.voiceMessageDuration,
-        assetUrl: message.assetUrl,
+        voiceMessageDuration: asset?.voiceMessageDuration,
+        assetUrl: message.assets.isEmpty ? '' : message.assets.first.url,
       );
     }
     FocusScope.of(context).requestFocus(_focusNode);

@@ -49,8 +49,8 @@ class _DownloadRequiredState extends State<DownloadRequired> {
           children: [
             Opacity(
               opacity: 0.1,
-              child: Icon(
-                widget.message.messageType.icon,
+              child: widget.message.assets.length > 1 ? _compoundAssetWidget : Icon(
+                _icon,
                 size: min(widget.height, widget.width) * 0.8,
                 color: widget.messageConfiguration?.toDownloadIcon ?? Colors.black,
               ),
@@ -75,4 +75,17 @@ class _DownloadRequiredState extends State<DownloadRequired> {
           ],
         ));
   }
+
+  IconData get _icon {
+    if (widget.message.assets.isEmpty){
+      return Icons.question_mark_sharp;
+    }
+
+    return widget.message.assets[0].type.icon;
+  }
+
+  Widget get _compoundAssetWidget {
+    return Text('Compound!');
+  }
+
 }

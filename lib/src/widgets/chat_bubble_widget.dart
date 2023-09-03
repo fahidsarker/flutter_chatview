@@ -193,8 +193,7 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
                     onLeftSwipe: featureActiveConfig?.enableSwipeToReply ?? true
                         ? () {
                             if (maxDuration != null) {
-                              widget.message.voiceMessageDuration =
-                                  Duration(milliseconds: maxDuration!);
+                              widget.message.voiceMessageDuration = Duration(milliseconds: maxDuration!);
                             }
                             if (widget.swipeToReplyConfig?.onLeftSwipe !=
                                 null) {

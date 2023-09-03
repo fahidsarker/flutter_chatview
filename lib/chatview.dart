@@ -35,3 +35,4 @@ export 'src/extensions/extensions.dart' show MessageTypes;
 export 'src/widgets/image_message_view.dart';
 export 'src/extensions/extensions.dart';
 export 'src/models/voice_message_configuration.dart';
+export 'src/models/asset.dart';

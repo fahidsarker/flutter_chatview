@@ -137,7 +137,7 @@ class ReplyMessageWidget extends StatelessWidget {
                             valueListenable: chatController
                                 ?.enabledCensoredModeNotifier ??
                                 ValueNotifier(false),
-                            builder: (_, v, c) => (v && message.replyMessage.messageType.containsAsset) ? Censored(type: message.replyMessage.messageType, height: height, width: width,) : c!,
+                            builder: (_, v, c) => (v && message.replyMessage.messageType.isAsset) ? Censored(type: message.replyMessage.messageType, height: height, width: width,) : c!,
                             child: message.replyMessage.messageType.isImage
                                 ? Container(
                               height: height,

@@ -29,7 +29,7 @@ class ImageMessageConfiguration {
   final ShareIconConfiguration? shareIconConfig;
 
   /// Provides callback when user taps on image message.
-  final void Function(BuildContext, Message)? onTap;
+  final void Function(BuildContext, AssetModel)? onTap;
 
   /// Used for giving height of image message.
   final double? height;

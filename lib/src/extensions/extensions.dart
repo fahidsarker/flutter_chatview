@@ -98,7 +98,11 @@ extension MessageTypes on MessageType {
 
   bool get isVideo => this == MessageType.video;
 
-  bool get containsAsset => isImage || isVoice || isVideo;
+  bool get isCompound => this == MessageType.compound;
+
+  // bool get containsAsset => isImage || isVoice || isVideo;
+
+  bool get isAsset => isImage || isVoice || isVideo;
 
   IconData get icon => isImage
       ? Icons.image

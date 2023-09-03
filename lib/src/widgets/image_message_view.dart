@@ -22,6 +22,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:chatview/chatview.dart';
 import 'package:chatview/src/extensions/extensions.dart';
 import 'package:chatview/src/models/models.dart';
 import 'package:chatview/src/widgets/censored.dart';
@@ -75,25 +76,33 @@ class ImageMessageView extends StatefulWidget {
 }
 
 class _ImageMessageViewState extends State<ImageMessageView> {
-  String get imageUrl => widget.message.assetUrl;
+  AssetModel get imageAsset => widget.message.assets[0];
 
-  Widget get iconButton => IconButton(onPressed: (){}, icon: Icon(Icons.emoji_emotions_outlined));
+  String get imageUrl => imageAsset.url;
+
+  Widget get iconButton =>
+      IconButton(onPressed: () {}, icon: Icon(Icons.emoji_emotions_outlined));
 
   @override
   Widget build(BuildContext context) {
-    final height= widget.imageMessageConfig?.height ?? ImageMessageView.thumbnailHeight;
-    final width= widget.imageMessageConfig?.width ?? ImageMessageView.thumbnailWidth;
+    final height = widget.imageMessageConfig?.height ??
+        ImageMessageView.thumbnailHeight;
+    final width = widget.imageMessageConfig?.width ??
+        ImageMessageView.thumbnailWidth;
     return Row(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment:
-          widget.isMessageBySender ? MainAxisAlignment.end : MainAxisAlignment.start,
+      widget.isMessageBySender ? MainAxisAlignment.end : MainAxisAlignment
+          .start,
       children: [
         // if (widget.isMessageBySender) iconButton,
         Stack(
           children: [
             GestureDetector(
-              onTap: () => widget.imageMessageConfig?.onTap != null
-                  ? widget.imageMessageConfig?.onTap!(context, widget.message)
+              onTap: () =>
+              widget.imageMessageConfig?.onTap != null
+                  ? widget.imageMessageConfig?.onTap!(
+                  context, widget.message.assets[0])
                   : null,
               child: Transform.scale(
                 scale: widget.highlightImage ? widget.highlightScale : 1.0,
@@ -101,18 +110,22 @@ class _ImageMessageViewState extends State<ImageMessageView> {
                     ? Alignment.centerRight
                     : Alignment.centerLeft,
                 child: Container(
-                  padding: widget.imageMessageConfig?.padding ?? EdgeInsets.zero,
+                  padding: widget.imageMessageConfig?.padding ??
+                      EdgeInsets.zero,
                   margin: widget.imageMessageConfig?.margin ??
                       EdgeInsets.only(
                         top: 6,
                         right: widget.isMessageBySender ? 6 : 0,
                         left: widget.isMessageBySender ? 0 : 6,
-                        bottom: widget.message.reactions.reactions.isNotEmpty ? 15 : 0,
+                        bottom: widget.message.reactions.reactions.isNotEmpty
+                            ? 15
+                            : 0,
                       ),
                   height: height,
                   width: width,
                   child: ClipRRect(
-                    borderRadius: widget.imageMessageConfig?.borderRadius ?? BorderRadius.circular(14),
+                    borderRadius: widget.imageMessageConfig?.borderRadius ??
+                        BorderRadius.circular(14),
                     child: ValueListenableBuilder<bool>(
                       valueListenable: widget.censoredNotifier,
                       child: (() {
@@ -147,7 +160,11 @@ class _ImageMessageViewState extends State<ImageMessageView> {
                         }
                       }()),
                       builder: (_, value, child) {
-                        return value ?  Censored(type: widget.message.messageType, height: height, width: width, messageConfiguration: widget.messageConfiguration,) : child!;
+                        return value
+                            ? Censored(type: MessageType.image, height: height,
+                          width: width, messageConfiguration: widget
+                              .messageConfiguration,)
+                            : child!;
                       },
                     ),
                   ),

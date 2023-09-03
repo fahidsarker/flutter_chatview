@@ -20,6 +20,7 @@
  * SOFTWARE.
  */
 import 'package:chatview/chatview.dart';
+import 'package:chatview/src/models/asset.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
@@ -42,16 +43,27 @@ abstract class Message {
   /// Represents reaction on message.
   final Reactions reactions;
 
-  /// Provides message type.
-  final MessageType messageType;
 
   /// Status of the message.
   final MessageStatus status;
 
   /// Provides max duration for recorded voice message.
-  Duration? voiceMessageDuration;
+  Duration? get voiceMessageDuration {
+    final voiceMessageIndex = assets.indexWhere((element) => element.type == MessageType.voice);
+    if (voiceMessageIndex != -1) {
+      return assets[voiceMessageIndex].voiceMessageDuration;
+    }
+    return null;
+  }
 
-  final String assetUrl;
+  set voiceMessageDuration(Duration? duration) {
+    final voiceMessageIndex = assets.indexWhere((element) => element.type == MessageType.voice);
+    if (voiceMessageIndex != -1) {
+      assets[voiceMessageIndex].voiceMessageDuration = duration;
+    }
+  }
+
+  final List<AssetModel> assets;
 
   final bool unsent;
 
@@ -59,48 +71,42 @@ abstract class Message {
 
   final GlobalKey key;
 
-  final bool assetDownloadRequired;
+  // final bool assetDownloadRequired;
 
-  final String? belongsToGroupOf;
 
+  MessageType get messageType => assets.isEmpty ? MessageType.text : assets.length == 1 ? assets.first.type : MessageType.compound;
+
+  bool get assetDownloadRequired => assets.any((e) => e.assetDownloadRequired);
 
   Message({
     required this.id,
     required this.message,
     required this.createdAt,
-    this.assetUrl = '',
+    List<AssetModel>? assets,
     required this.sendBy,
     this.replyMessage = const ReplyMessage(),
     Reactions? reactions,
-    this.messageType = MessageType.text,
-    this.voiceMessageDuration,
+    // this.voiceMessageDuration,
     required this.status,
     this.unsent = false,
     this.readAt,
-    this.assetDownloadRequired = false,
-    this.belongsToGroupOf,
+    // this.assetDownloadRequired = false,
   })  : key = GlobalKey(),
-        reactions = reactions ?? Reactions(id, []),
-        assert(
-          (messageType.isVoice
-              ? ((defaultTargetPlatform == TargetPlatform.iOS ||
-                  defaultTargetPlatform == TargetPlatform.android))
-              : true),
-          "Voice messages are only supported with android and ios platform",
-        );
+        assets = assets ?? [],
+        reactions = reactions ?? Reactions(id, []);
 
   String get uniqueSignature {
     return '$id${status.name}${reactions.reactions.map((e) => '${e.userID}${e.reaction}')}';
   }
 
-  Message copyWith({
-    String? message,
-    String? assetUrl,
-    ReplyMessage? replyMessage,
-    MessageStatus? status,
-    MessageType? messageType,
-    bool? assetDownloadRequired
-  });
+  int get assetCount => assets.length;
+
+  Message copyWith(
+      {String? message,
+      List<AssetModel>? assets,
+      ReplyMessage? replyMessage,
+        Reactions? reactions,
+      MessageStatus? status});
 
   @override
   bool operator ==(Object other) =>
@@ -113,10 +119,8 @@ abstract class Message {
           sendBy == other.sendBy &&
           replyMessage == other.replyMessage &&
           reactions == other.reactions &&
-          messageType == other.messageType &&
           status == other.status &&
-          voiceMessageDuration == other.voiceMessageDuration &&
-          assetUrl == other.assetUrl &&
+          // voiceMessageDuration == other.voiceMessageDuration &&
           unsent == other.unsent &&
           readAt == other.readAt;
 
@@ -128,15 +132,12 @@ abstract class Message {
       sendBy.hashCode ^
       replyMessage.hashCode ^
       reactions.hashCode ^
-      messageType.hashCode ^
       status.hashCode ^
-      voiceMessageDuration.hashCode ^
-      assetUrl.hashCode ^
+      // voiceMessageDuration.hashCode ^
       unsent.hashCode ^
       readAt.hashCode;
 
-  @override
-  String toString() {
-    return 'Message{id: $id, message: $message, createdAt: $createdAt, sendBy: $sendBy, replyMessage: $replyMessage, reactions: $reactions, messageType: $messageType, status: $status, voiceMessageDuration: $voiceMessageDuration, assetUrl: $assetUrl, unsent: $unsent, readAt: $readAt}';
-  }
+  bool get containsAsset => assets.isNotEmpty;
+
+
 }
