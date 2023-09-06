@@ -212,7 +212,7 @@ class _ChatGroupedListWidgetState extends State<ChatGroupedListWidget>
             valueListenable: widget.replyMessage,
             builder: (_, replyMessage, __) => SizedBox(
               height: MediaQuery.sizeOf(context).width *
-                  ((replyMessage.message.isNotEmpty || replyMessage.assetUrl.isNotEmpty) ? 0.3 : 0.14),
+                  ((replyMessage.message.isNotEmpty || (replyMessage.assets).isNotEmpty) ? 0.3 : 0.14),
             ),
           ),
         ],

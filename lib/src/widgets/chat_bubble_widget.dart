@@ -99,7 +99,7 @@ class ChatBubbleWidget extends StatefulWidget {
 class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
   String get replyMessage => widget.message.replyMessage.message;
 
-  String get replyMessageAsset => widget.message.replyMessage.assetUrl;
+  List<AssetModel> get replyMessageAssets => widget.message.replyMessage.assets;
 
   bool get isMessageBySender => widget.message.sendBy == currentUser?.id;
 
@@ -308,7 +308,7 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
                   ?.senderNameTextStyle,
             ),
           ),
-        if (replyMessage.isNotEmpty || replyMessageAsset.isNotEmpty)
+        if (replyMessage.isNotEmpty || (replyMessageAssets).isNotEmpty)
           widget.repliedMessageConfig?.repliedMessageWidgetBuilder != null
               ? widget.repliedMessageConfig!
                   .repliedMessageWidgetBuilder!(widget.message.replyMessage)

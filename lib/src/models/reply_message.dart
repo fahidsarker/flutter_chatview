@@ -19,6 +19,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import 'package:chatview/chatview.dart';
+
 import '../values/enumaration.dart';
 
 class ReplyMessage {
@@ -30,7 +32,12 @@ class ReplyMessage {
 
   /// Provides user id of whom to reply.
   final String replyTo;
-  final MessageType messageType;
+
+  MessageType get messageType => assets.isEmpty
+      ? MessageType.text
+      : assets.length > 1
+          ? MessageType.compound
+          : assets.first.type;
 
   /// Provides max duration for recorded voice message.
   final Duration? voiceMessageDuration;
@@ -38,59 +45,64 @@ class ReplyMessage {
   /// Id of message, it replies to.
   final String messageId;
 
-
   final bool isValid;
 
-  final String assetUrl;
+  // String get assetUrl => asset?.url ?? '';
+
+  final List<AssetModel> assets;
 
   const ReplyMessage({
     this.messageId = '',
     this.message = '',
     this.replyTo = '',
     this.replyBy = '',
-    this.messageType = MessageType.text,
+    // this.messageType = MessageType.text,
     this.voiceMessageDuration,
-     this.assetUrl = '',
+    // this.assetUrl = '',
     this.isValid = true,
-  });
+    List<AssetModel>? assets,
+  }) : assets = assets ?? const [];
 
   factory ReplyMessage.fromJson(Map<String, dynamic> json) => ReplyMessage(
         message: json['message'],
         replyBy: json['replyBy'],
         replyTo: json['replyTo'],
-        messageType: MessageType.values.firstWhere((element) => element.name == json["message_type"]),
+        // messageType: MessageType.values.firstWhere((element) => element.name == json["message_type"]),
         messageId: json["id"],
-        voiceMessageDuration: json["voiceMessageDuration"] == null ? null : Duration(milliseconds: json["voiceMessageDuration"]),
+        voiceMessageDuration: json["voiceMessageDuration"] == null
+            ? null
+            : Duration(milliseconds: json["voiceMessageDuration"]),
         isValid: json["isValid"] ?? true,
-        assetUrl: json["assetUrl"] ?? '',
+        // assetUrl: json["assetUrl"] ?? '',
+        assets: json["assets"] == null
+            ? []
+            : List<AssetModel>.from(
+                json["assets"].map((x) => AssetModel.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
         'message': message,
         'replyBy': replyBy,
         'replyTo': replyTo,
-        'message_type': messageType.name,
+        // 'message_type': messageType.name,
         'id': messageId,
         'voiceMessageDuration': voiceMessageDuration?.inMilliseconds,
         'isValid': isValid,
-        'assetUrl': assetUrl,
+        // 'assetUrl': assetUrl,
+        'assets': assets.map((e) => e.toJson()),
       };
 
-
-  ReplyMessage copyWith({
-      bool? isValid,
-    String? message,
-    String? assetUrl
-  }) {
+  ReplyMessage copyWith({bool? isValid, String? message, List<AssetModel>? assets}) {
     return ReplyMessage(
       isValid: isValid ?? this.isValid,
       message: message ?? this.message,
       replyBy: replyBy,
       replyTo: replyTo,
-      messageType: messageType,
+      // messageType: messageType,
       voiceMessageDuration: voiceMessageDuration,
       messageId: messageId,
-      assetUrl: assetUrl ?? this.assetUrl,
+      // assetUrl: assetUrl ?? this.assetUrl,
+      assets: assets ?? this.assets
     );
   }
 
@@ -102,20 +114,21 @@ class ReplyMessage {
           message == other.message &&
           replyBy == other.replyBy &&
           replyTo == other.replyTo &&
-          messageType == other.messageType &&
+          // messageType == other.messageType &&
           voiceMessageDuration == other.voiceMessageDuration &&
           messageId == other.messageId &&
           isValid == other.isValid &&
-          assetUrl == other.assetUrl;
+          // assetUrl == other.assetUrl;
+          // asset == other.asset;
+          assets == other.assets;
 
   @override
   int get hashCode =>
       message.hashCode ^
       replyBy.hashCode ^
       replyTo.hashCode ^
-      messageType.hashCode ^
+      // messageType.hashCode ^
       voiceMessageDuration.hashCode ^
       messageId.hashCode ^
-      isValid.hashCode ^
-      assetUrl.hashCode;
+      isValid.hashCode ;
 }

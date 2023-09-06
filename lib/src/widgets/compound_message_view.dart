@@ -77,7 +77,30 @@ class CompoundMessageView extends StatelessWidget {
             children: [
               _buildAsset(context, message.assets[2]),
               if (message.assetCount > 3)
-                _buildAsset(context, message.assets[3]),
+                if (message.assetCount == 4)
+                  _buildAsset(context, message.assets[3])
+                else
+                  Stack(
+                    children: [
+                      Opacity(
+                          opacity: 0.5,
+                          child: _buildAsset(context, message.assets[3])),
+                      SizedBox(
+                        height: _componentHeight,
+                        width: _componentWidth,
+                        child: Center(
+                          child: Text(
+                            '+${message.assetCount - 3}',
+                            style: ((isMessageBySender
+                                        ? outgoingChatBubbleConfig?.textStyle
+                                        : inComingChatBubbleConfig?.textStyle) ?? const TextStyle()).copyWith(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold)
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
             ],
           ),
       ],

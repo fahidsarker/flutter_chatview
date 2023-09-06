@@ -107,7 +107,7 @@ class ReplyMessageWidget extends StatelessWidget {
                 );
 
                 final replyMessage = message.replyMessage.message;
-                final replyMessageAsset = message.replyMessage.assetUrl;
+                // final replyMessageAsset = message.replyMessage.asset;
 
                 final height = repliedMessageConfig
                     ?.repliedImageMessageHeight ??
@@ -144,12 +144,12 @@ class ReplyMessageWidget extends StatelessWidget {
                               width: width,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
-                                  image: message.replyMessage.assetUrl.isUrl
+                                  image: message.replyMessage.assets[0].url.isUrl
                                       ? Image
-                                      .network(replyMessageAsset)
+                                      .network(message.replyMessage.assets[0].url)
                                       .image
                                       : Image
-                                      .file(File(replyMessageAsset))
+                                      .file(File(message.replyMessage.assets[0].url))
                                       .image,
                                   fit: BoxFit.fill,
                                 ),

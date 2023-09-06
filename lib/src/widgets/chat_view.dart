@@ -290,7 +290,7 @@ class _ChatViewState extends State<ChatView>
 
   void _assignReplyMessage() {
     if (replyMessage.value.message.isNotEmpty ||
-        replyMessage.value.assetUrl.isNotEmpty) {
+        (replyMessage.value.assets).isNotEmpty) {
       replyMessage.value = const ReplyMessage();
     }
   }

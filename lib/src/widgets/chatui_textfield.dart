@@ -295,7 +295,7 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
       FocusManager.instance.primaryFocus?.unfocus();
       var medias = (await HLImagePicker().openPicker(
               pickerOptions: HLPickerOptions(
-        maxSelectedAssets: 5,
+        maxSelectedAssets: 10,
         maxDuration: 5 * 60,
         convertHeicToJPG: true,
         convertLivePhotosToJPG: true,
