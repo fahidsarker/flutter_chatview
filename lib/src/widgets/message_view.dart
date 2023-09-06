@@ -274,7 +274,11 @@ class _MessageViewState extends State<MessageView>
                         );
                       } else if (data.messageType.isVideo) {
                         return VideoPlayerThumbnail(
+                          censoredNotifier: widget.controller
+                                  ?.enabledCensoredModeNotifier ??
+                              ValueNotifier<bool>(false),
                           message: data,
+                          messageConfiguration: messageConfig,
                           isMessageBySender: widget.isMessageBySender,
                           imageMessageConfig:
                               widget.messageConfig?.imageMessageConfig,

@@ -46,5 +46,5 @@ flutter:
       fonts:
         - asset: lib/icon_font/ui_icons.ttf
   assets:
-    - assets/multi_media.png
+    - lib/assets/multi_media.png
 

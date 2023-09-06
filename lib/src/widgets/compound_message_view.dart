@@ -58,10 +58,11 @@ class CompoundMessageView extends StatelessWidget {
               child: _buildCompoundView(
                   context,
                   isLocked
-                      ? message.copyWith(assets: [
-                          message.assets[0]
-                              .copyWith(assetDownloadRequired: true)
-                        ])
+                      ? message.copyWith(
+                          assets: message.assets
+                              .map((e) =>
+                                  e.copyWith(assetDownloadRequired: true))
+                              .toList())
                       : message),
             ),
             if (!forReply && message.reactions.reactions.isNotEmpty)
@@ -151,10 +152,6 @@ class CompoundMessageView extends StatelessWidget {
   }
 
   Widget _buildAsset(BuildContext context, AssetModel asset) {
-
-    if (asset.assetDownloadRequired) {
-
-    }
     if (asset.type == MessageType.image) {
       return _buildImage(context, asset);
     } else if (asset.type == MessageType.video) {
@@ -165,13 +162,22 @@ class CompoundMessageView extends StatelessWidget {
   }
 
   Widget _buildImage(BuildContext context, AssetModel asset) {
+    AssetImage? image = asset.assetDownloadRequired ? messageConfiguration?.getAssetIcon?.call('photo') : null;
+    if (image == null && asset.assetDownloadRequired) {
+      return Censored(
+        height: _componentHeight,
+        width: _componentWidth,
+        messageConfiguration: messageConfiguration,
+        type: asset.type,
+      );
+    }
     return Container(
       height: _componentHeight,
       width: _componentWidth,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
         image: DecorationImage(
-          image: FileImage(File(asset.url)),
+          image: (image as ImageProvider?) ?? FileImage(File(asset.url)),
           fit: BoxFit.cover,
         ),
       ),
@@ -179,6 +185,15 @@ class CompoundMessageView extends StatelessWidget {
   }
 
   Widget _buildVideoThumb(BuildContext context, AssetModel asset) {
+    AssetImage? image = asset.assetDownloadRequired ? messageConfiguration?.getAssetIcon?.call('video') : null;
+    if (image == null && asset.assetDownloadRequired) {
+      return Censored(
+        height: _componentHeight,
+        width: _componentWidth,
+        messageConfiguration: messageConfiguration,
+        type: asset.type,
+      );
+    }
     return VideoPlayerThumbnail(
       message: message.copyWith(
         assets: [asset],
@@ -187,11 +202,16 @@ class CompoundMessageView extends StatelessWidget {
       ),
       forReply: forReply,
       isMessageBySender: isMessageBySender,
+      thumbnailImage: image == null ? null : DecorationImage(
+        image: image,
+        fit: BoxFit.cover,
+      ),
       imageMessageConfig: ImageMessageConfiguration(
         height: _componentHeight,
         width: _componentWidth,
         margin: EdgeInsets.zero,
       ),
+      censoredNotifier: ValueNotifier(false),
     );
   }
 

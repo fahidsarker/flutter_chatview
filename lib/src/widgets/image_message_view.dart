@@ -32,7 +32,6 @@ import 'reaction_widget.dart';
 import 'share_icon.dart';
 
 class ImageMessageView extends StatefulWidget {
-
   static const thumbnailHeight = 200.0;
   static const thumbnailWidth = 150.0;
 
@@ -70,7 +69,6 @@ class ImageMessageView extends StatefulWidget {
 
   final MessageConfiguration? messageConfiguration;
 
-
   @override
   State<ImageMessageView> createState() => _ImageMessageViewState();
 }
@@ -85,24 +83,23 @@ class _ImageMessageViewState extends State<ImageMessageView> {
 
   @override
   Widget build(BuildContext context) {
-    final height = widget.imageMessageConfig?.height ??
-        ImageMessageView.thumbnailHeight;
-    final width = widget.imageMessageConfig?.width ??
-        ImageMessageView.thumbnailWidth;
+    final height =
+        widget.imageMessageConfig?.height ?? ImageMessageView.thumbnailHeight;
+    final width =
+        widget.imageMessageConfig?.width ?? ImageMessageView.thumbnailWidth;
     return Row(
       mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment:
-      widget.isMessageBySender ? MainAxisAlignment.end : MainAxisAlignment
-          .start,
+      mainAxisAlignment: widget.isMessageBySender
+          ? MainAxisAlignment.end
+          : MainAxisAlignment.start,
       children: [
         // if (widget.isMessageBySender) iconButton,
         Stack(
           children: [
             GestureDetector(
-              onTap: () =>
-              widget.imageMessageConfig?.onTap != null
+              onTap: () => widget.imageMessageConfig?.onTap != null
                   ? widget.imageMessageConfig?.onTap!(
-                  context, widget.message.assets[0])
+                      context, widget.message.assets[0])
                   : null,
               child: Transform.scale(
                 scale: widget.highlightImage ? widget.highlightScale : 1.0,
@@ -110,8 +107,8 @@ class _ImageMessageViewState extends State<ImageMessageView> {
                     ? Alignment.centerRight
                     : Alignment.centerLeft,
                 child: Container(
-                  padding: widget.imageMessageConfig?.padding ??
-                      EdgeInsets.zero,
+                  padding:
+                      widget.imageMessageConfig?.padding ?? EdgeInsets.zero,
                   margin: widget.imageMessageConfig?.margin ??
                       EdgeInsets.only(
                         top: 6,
@@ -138,9 +135,9 @@ class _ImageMessageViewState extends State<ImageMessageView> {
                               return Center(
                                 child: CircularProgressIndicator(
                                   value: loadingProgress.expectedTotalBytes !=
-                                      null
+                                          null
                                       ? loadingProgress.cumulativeBytesLoaded /
-                                      loadingProgress.expectedTotalBytes!
+                                          loadingProgress.expectedTotalBytes!
                                       : null,
                                 ),
                               );
@@ -160,10 +157,21 @@ class _ImageMessageViewState extends State<ImageMessageView> {
                         }
                       }()),
                       builder: (_, value, child) {
+                        final lockedImage = value
+                            ? widget.messageConfiguration?.getAssetIcon
+                                ?.call('photo')
+                            : null;
                         return value
-                            ? Censored(type: MessageType.image, height: height,
-                          width: width, messageConfiguration: widget
-                              .messageConfiguration,)
+                            ? (lockedImage == null
+                                    ? null
+                                    : Image(image: lockedImage,)) ??
+                                Censored(
+                                  type: MessageType.image,
+                                  height: height,
+                                  width: width,
+                                  messageConfiguration:
+                                      widget.messageConfiguration,
+                                )
                             : child!;
                       },
                     ),

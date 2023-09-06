@@ -48,6 +48,7 @@ class ReplyMessageWidget extends StatelessWidget {
   /// Provides message instance of chat.
   final Message message;
   final ChatBubble? chatBubbleConfig;
+
   /// Provides configurations related to replied message such as textstyle
   /// padding, margin etc. Also, this widget is located upon chat bubble.
   final RepliedMessageConfiguration? repliedMessageConfig;
@@ -135,8 +136,7 @@ class ReplyMessageWidget extends StatelessWidget {
                             valueListenable:
                                 chatController?.enabledCensoredModeNotifier ??
                                     ValueNotifier(false),
-                            builder: (_, v, c) => (message
-                                    .replyMessage.assetDownloadRequired)
+                            builder: (_, v, c) => (message.replyMessage.assetDownloadRequired)
                                 ? Container(
                                     constraints: BoxConstraints(
                                       maxWidth:
@@ -157,24 +157,22 @@ class ReplyMessageWidget extends StatelessWidget {
                                           Colors.grey.shade500,
                                     ),
                                     child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Icon(
-                                                message.replyMessage.messageType.icon,
-                                                color: repliedMessageConfig
-                                                        ?.micIconColor ??
-                                                    Colors.white,
-                                              ),
-                                              const SizedBox(width: 2),
-
-                                                Text(
-                                                  'Attachments',
-                                                  style: repliedMessageConfig
-                                                      ?.textStyle,
-                                                ),
-                                            ],
-                                          )
-                                  )
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          message.replyMessage.messageType.icon,
+                                          color: repliedMessageConfig
+                                                  ?.micIconColor ??
+                                              Colors.white,
+                                        ),
+                                        const SizedBox(width: 2),
+                                        Text(
+                                          'Attachments',
+                                          style:
+                                              repliedMessageConfig?.textStyle,
+                                        ),
+                                      ],
+                                    ))
                                 : (v &&
                                         message
                                             .replyMessage.messageType.isAsset)
@@ -219,13 +217,14 @@ class ReplyMessageWidget extends StatelessWidget {
                                               BorderRadius.circular(14),
                                         ),
                                         child: VideoPlayerThumbnail(
-                                            message: message,
-                                            isMessageBySender: false,
-                                            forReply: true,
-                                            imageMessageConfig:
-                                                ImageMessageConfiguration(
-                                                    width: width,
-                                                    height: height)),
+                                          message: message,
+                                          isMessageBySender: false,
+                                          forReply: true,
+                                          imageMessageConfig:
+                                              ImageMessageConfiguration(
+                                                  width: width, height: height),
+                                          censoredNotifier: ValueNotifier(false),
+                                        ),
                                       )
                                     : message
                                             .replyMessage.messageType.isCompound
@@ -239,7 +238,8 @@ class ReplyMessageWidget extends StatelessWidget {
                                               message: message,
                                               forReply: true,
                                               isMessageBySender: true,
-                                              outgoingChatBubbleConfig:chatBubbleConfig,
+                                              outgoingChatBubbleConfig:
+                                                  chatBubbleConfig,
                                               lockNotifier: chatController
                                                       ?.enabledCensoredModeNotifier ??
                                                   ValueNotifier(false),

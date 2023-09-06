@@ -46,6 +46,8 @@ class MessageConfiguration {
   final Color? toDownloadBack;
   final Color? toDownloadIcon;
 
+  final AssetImage Function(String)? getAssetIcon;
+
   const MessageConfiguration({
     this.imageMessageConfig,
     this.messageReactionConfig,
@@ -55,6 +57,7 @@ class MessageConfiguration {
     this.preprocessMessage,
     this.toDownloadBack,
     this.toDownloadIcon,
+    this.getAssetIcon,
   });
 
   MessageConfiguration copyWith({
