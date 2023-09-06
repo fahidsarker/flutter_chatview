@@ -9,13 +9,14 @@ class Censored extends StatelessWidget {
   final double? width;
   final MessageType type;
   final MessageConfiguration? messageConfiguration;
+  final Widget? child;
 
   const Censored(
       {Key? key,
       this.height,
       this.width,
-      this.messageConfiguration,
-      required this.type})
+      required this.messageConfiguration,
+      required this.type, this.child})
       : super(key: key);
 
   @override
@@ -32,7 +33,7 @@ class Censored extends StatelessWidget {
         children: [
           Opacity(
             opacity: 0.1,
-            child: Icon(
+            child: child ?? Icon(
               type.icon,
               size: min(height ?? 0, width ?? 0) * 0.9,
             ),

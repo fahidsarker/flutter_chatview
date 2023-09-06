@@ -30,7 +30,7 @@ class _DownloadRequiredState extends State<DownloadRequired> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.message.assets);
+    // print(widget.message.assets);
     return Container(
         height: widget.height,
         width: widget.width,

@@ -22,7 +22,7 @@
 import 'package:chatview/chatview.dart';
 
 import '../values/enumaration.dart';
-
+import 'package:collection/collection.dart';
 class ReplyMessage {
   /// Provides reply message.
   final String message;
@@ -50,6 +50,8 @@ class ReplyMessage {
   // String get assetUrl => asset?.url ?? '';
 
   final List<AssetModel> assets;
+
+  bool get assetDownloadRequired => assets.any((element) => element.assetDownloadRequired);
 
   const ReplyMessage({
     this.messageId = '',
@@ -114,21 +116,18 @@ class ReplyMessage {
           message == other.message &&
           replyBy == other.replyBy &&
           replyTo == other.replyTo &&
-          // messageType == other.messageType &&
           voiceMessageDuration == other.voiceMessageDuration &&
           messageId == other.messageId &&
           isValid == other.isValid &&
-          // assetUrl == other.assetUrl;
-          // asset == other.asset;
-          assets == other.assets;
+          const ListEquality().equals(assets, other.assets);
 
   @override
   int get hashCode =>
       message.hashCode ^
       replyBy.hashCode ^
       replyTo.hashCode ^
-      // messageType.hashCode ^
       voiceMessageDuration.hashCode ^
       messageId.hashCode ^
-      isValid.hashCode ;
+      isValid.hashCode ^
+      assets.hashCode;
 }

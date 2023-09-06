@@ -10,18 +10,19 @@ class VideoPlayerThumbnail extends StatelessWidget {
   final ImageMessageConfiguration? imageMessageConfig;
   final bool isMessageBySender;
   final MessageReactionConfiguration? messageReactionConfig;
+  final bool forReply;
 
   const VideoPlayerThumbnail({
     Key? key,
     required this.message,
     required this.isMessageBySender,
     this.imageMessageConfig,
-    this.messageReactionConfig,
+    this.messageReactionConfig, this.forReply = false,
   }) : super(key: key);
 
   Future<Uint8List?> _getThumbnailData() async {
     return await vt.VideoThumbnail.thumbnailData(
-      video: message.assets[0].url,
+      video: forReply ? message.replyMessage.assets[0].url : message.assets[0].url,
       imageFormat: vt.ImageFormat.JPEG,
       quality: 50,
     );
@@ -32,7 +33,7 @@ class VideoPlayerThumbnail extends StatelessWidget {
     final width = imageMessageConfig?.width ?? ImageMessageView.thumbnailWidth;
     final height =
         imageMessageConfig?.height ?? ImageMessageView.thumbnailHeight;
-    final asset = message.assets[0];
+    final asset = forReply ? message.replyMessage.assets[0] : message.assets[0];
 
     return InkWell(
       onTap: () => imageMessageConfig?.onTap?.call(context, asset),
@@ -104,7 +105,7 @@ class VideoPlayerThumbnail extends StatelessWidget {
               },
             ),
           ),
-          if (message.reactions.reactions.isNotEmpty)
+          if (!forReply && message.reactions.reactions.isNotEmpty)
             ReactionWidget(
               isMessageBySender: isMessageBySender,
               reaction: message.reactions,

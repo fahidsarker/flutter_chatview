@@ -1,4 +1,5 @@
 import 'package:chatview/chatview.dart';
+import 'package:chatview/src/widgets/action_required.dart';
 import 'package:chatview/src/widgets/chat_view_inherited_widget.dart';
 import 'package:chatview/src/widgets/compound_message_view.dart';
 import 'package:chatview/src/widgets/download_state.dart';
@@ -158,7 +159,14 @@ class _MessageViewState extends State<MessageView>
             return Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                (() {
+                ActionRequired(
+                height: ImageMessageView.thumbnailHeight,
+                width: ImageMessageView.thumbnailWidth,
+                message: data,
+                controller: widget.controller,
+                messageConfiguration: messageConfig,
+                isMessageBySender: widget.isMessageBySender,
+                childBuilder: () => (() {
                       if (data.unsent) {
                         return TextMessageView(
                           inComingChatBubbleConfig:
@@ -178,48 +186,50 @@ class _MessageViewState extends State<MessageView>
                           isUnsent: true,
                         );
                       } else if (message.isAllEmoji && message.length < 5) {
-                        return Stack(
-                          clipBehavior: Clip.none,
-                          children: [
-                            Padding(
-                              padding: emojiMessageConfiguration?.padding ??
-                                  EdgeInsets.fromLTRB(
-                                    leftPadding2,
-                                    4,
-                                    leftPadding2,
-                                    data.reactions.reactions.isNotEmpty
-                                        ? 14
-                                        : 0,
+                        return  Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              Padding(
+                                padding: emojiMessageConfiguration?.padding ??
+                                    EdgeInsets.fromLTRB(
+                                      leftPadding2,
+                                      4,
+                                      leftPadding2,
+                                      data.reactions.reactions.isNotEmpty
+                                          ? 14
+                                          : 0,
+                                    ),
+                                child: Transform.scale(
+                                  scale: widget.shouldHighlight
+                                      ? widget.highlightScale
+                                      : 1.0,
+                                  child: Text(
+                                    message,
+                                    style:
+                                        emojiMessageConfiguration?.textStyle ??
+                                            const TextStyle(fontSize: 30),
                                   ),
-                              child: Transform.scale(
-                                scale: widget.shouldHighlight
-                                    ? widget.highlightScale
-                                    : 1.0,
-                                child: Text(
-                                  message,
-                                  style: emojiMessageConfiguration?.textStyle ??
-                                      const TextStyle(fontSize: 30),
                                 ),
                               ),
-                            ),
-                            if (data.reactions.reactions.isNotEmpty)
-                              ReactionWidget(
-                                reaction: data.reactions,
-                                messageReactionConfig:
-                                    messageConfig?.messageReactionConfig,
-                                isMessageBySender: widget.isMessageBySender,
-                              ),
-                          ],
+                              if (data.reactions.reactions.isNotEmpty)
+                                ReactionWidget(
+                                  reaction: data.reactions,
+                                  messageReactionConfig:
+                                      messageConfig?.messageReactionConfig,
+                                  isMessageBySender: widget.isMessageBySender,
+                                ),
+                            ],
+
                         );
-                      } else if (data.assetDownloadRequired) {
-                        return DownloadRequired(
-                          height: ImageMessageView.thumbnailHeight,
-                          width: ImageMessageView.thumbnailWidth,
-                          message: data,
-                          controller: widget.controller,
-                          messageConfiguration: messageConfig,
-                          isMessageBySender: widget.isMessageBySender,
-                        );
+                        // } else if (data.assetDownloadRequired) {
+                        //   return DownloadRequired(
+                        //     height: ImageMessageView.thumbnailHeight,
+                        //     width: ImageMessageView.thumbnailWidth,
+                        //     message: data,
+                        //     controller: widget.controller,
+                        //     messageConfiguration: messageConfig,
+                        //     isMessageBySender: widget.isMessageBySender,
+                        //   );
                       } else if (data.messageType.isImage) {
                         return ImageMessageView(
                           message: data,
@@ -273,23 +283,28 @@ class _MessageViewState extends State<MessageView>
                         );
                       } else if (data.messageType.isCompound) {
                         return CompoundMessageView(
+                          lockNotifier: widget.controller?.enabledCensoredModeNotifier ??
+                              ValueNotifier<bool>(false),
+                          messageConfiguration: widget.messageConfig,
                           message: data.copyWith(
-                            // assets: [data.assets[0], data.assets[1]],
-                          ),
+                              // assets: [data.assets[0], data.assets[1]],
+                              ),
                           isMessageBySender: widget.isMessageBySender,
                           imageMessageConfig:
                               widget.messageConfig?.imageMessageConfig,
                           messageReactionConfig:
                               widget.messageConfig?.messageReactionConfig,
-                          inComingChatBubbleConfig: widget.inComingChatBubbleConfig,
-                          outgoingChatBubbleConfig: widget.outgoingChatBubbleConfig,
+                          inComingChatBubbleConfig:
+                              widget.inComingChatBubbleConfig,
+                          outgoingChatBubbleConfig:
+                              widget.outgoingChatBubbleConfig,
                         );
                       } else if (data.messageType.isCustom &&
                           messageConfig?.customMessageBuilder != null) {
                         return messageConfig?.customMessageBuilder!(data);
                       }
                     }()) ??
-                    const SizedBox(),
+                    const SizedBox(),),
                 if (widget.isMessageBySender &&
                     widget.controller?.initialMessageList.last.id == data.id &&
                     data.status == MessageStatus.read)

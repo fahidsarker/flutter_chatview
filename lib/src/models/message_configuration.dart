@@ -56,4 +56,29 @@ class MessageConfiguration {
     this.toDownloadBack,
     this.toDownloadIcon,
   });
+
+  MessageConfiguration copyWith({
+ImageMessageConfiguration? imageMessageConfig,
+    MessageReactionConfiguration? messageReactionConfig,
+    EmojiMessageConfiguration? emojiMessageConfig,
+    Widget Function(Message)? customMessageBuilder,
+    // Widget Function(Message, bool, MessageConfiguration?, bool, double)? encryptedMessageBuilder,
+    Future<Message> Function(Message)? preprocessMessage,
+    VoiceMessageConfiguration? voiceMessageConfig,
+    Color? toDownloadBack,
+    Color? toDownloadIcon,
+  }) {
+    return MessageConfiguration(
+      imageMessageConfig: imageMessageConfig ?? this.imageMessageConfig,
+      messageReactionConfig: messageReactionConfig ?? this.messageReactionConfig,
+      emojiMessageConfig: emojiMessageConfig ?? this.emojiMessageConfig,
+      customMessageBuilder: customMessageBuilder ?? this.customMessageBuilder,
+      // encryptedMessageBuilder: encryptedMessageBuilder ?? this.encryptedMessageBuilder,
+      preprocessMessage: preprocessMessage ?? this.preprocessMessage,
+      voiceMessageConfig: voiceMessageConfig ?? this.voiceMessageConfig,
+      toDownloadBack: toDownloadBack ?? this.toDownloadBack,
+      toDownloadIcon: toDownloadIcon ?? this.toDownloadIcon,
+    );
+  }
+
 }

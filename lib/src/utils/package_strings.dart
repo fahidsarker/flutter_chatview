@@ -33,6 +33,7 @@ class PackageStrings {
       "Tap and hold to multiply your reaction";
   static const String photo = "Photo";
   static const String video = "Video";
+  static const String compound = "Attachments";
   static const String send = "Send";
   static const String you = "You";
 }

@@ -5,7 +5,8 @@ class MessageNotifier extends ValueNotifier<Message>{
   MessageNotifier(Message value) : super(value);
 
   void updateMessage(Message message){
-    if (message == (value)){
+    if (message == value){
+      print('Message is same');
       return;
     }
     value = message;

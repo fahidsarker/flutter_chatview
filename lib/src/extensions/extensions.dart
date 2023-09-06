@@ -21,6 +21,8 @@
  */
 import 'package:chatview/chatview.dart';
 import 'package:chatview/src/widgets/chat_view_inherited_widget.dart';
+import 'package:chatview/widgets/icons.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../utils/constants/constants.dart';
@@ -102,7 +104,7 @@ extension MessageTypes on MessageType {
 
   // bool get containsAsset => isImage || isVoice || isVideo;
 
-  bool get isAsset => isImage || isVoice || isVideo;
+  bool get isAsset => isImage || isVoice || isVideo || isCompound;
 
   IconData get icon => isImage
       ? Icons.image
@@ -112,6 +114,8 @@ extension MessageTypes on MessageType {
               ? Icons.mic
               : isVideo
                   ? Icons.movie
+                  : isCompound
+                      ? Icons.attachment
                   : Icons.error;
 
 }

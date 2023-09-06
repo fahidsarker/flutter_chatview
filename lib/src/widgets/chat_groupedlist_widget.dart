@@ -221,6 +221,7 @@ class _ChatGroupedListWidgetState extends State<ChatGroupedListWidget>
   }
 
   Future<void> _onReplyTap(String id, List<Message>? messages) async {
+    print('>>> _onReplyTap $id');
     // Finds the replied message if exists
     final repliedMessages = messages?.firstWhere((message) => id == message.id);
 
@@ -309,35 +310,39 @@ class _ChatGroupedListWidgetState extends State<ChatGroupedListWidget>
                       return ValueListenableBuilder<Message>(
                         key: ValueKey(message.value.uniqueSignature),
                         valueListenable: message,
-                        builder: (_, message, __) => ChatBubbleWidget(
-                          key: ValueKey(message.uniqueSignature),
-                          messageTimeTextStyle:
-                              chatBackgroundConfig.messageTimeTextStyle,
-                          messageTimeIconColor:
-                              chatBackgroundConfig.messageTimeIconColor,
-                          message: message,
-                          messageConfig: widget.messageConfig,
-                          chatBubbleConfig: chatBubbleConfig,
-                          profileCircleConfig: profileCircleConfig,
-                          swipeToReplyConfig: widget.swipeToReplyConfig,
-                          repliedMessageConfig: widget.repliedMessageConfig,
-                          slideAnimation: _slideAnimation,
-                          onLongPress: (yCoordinate, xCoordinate) =>
-                              widget.onChatBubbleLongPress(
-                            yCoordinate,
-                            xCoordinate,
-                            message,
-                          ),
-                          onSwipe: widget.assignReplyMessage,
-                          shouldHighlight: state == message.id,
-                          onReplyTap: widget
-                                      .repliedMessageConfig
-                                      ?.repliedMsgAutoScrollConfig
-                                      .enableScrollToRepliedMsg ??
-                                  false
-                              ? (replyId) => _onReplyTap(replyId, snapshot.data?.map((e) => e.value).toList())
-                              : null,
-                        ),
+                        builder: (_, message, __) {
+                          print('>>> message ${message.id} -- ${message.message}');
+                          return ChatBubbleWidget(
+                            // key: ValueKey(message.uniqueSignature),
+                            key: message.key,
+                            messageTimeTextStyle:
+                            chatBackgroundConfig.messageTimeTextStyle,
+                            messageTimeIconColor:
+                            chatBackgroundConfig.messageTimeIconColor,
+                            message: message,
+                            messageConfig: widget.messageConfig,
+                            chatBubbleConfig: chatBubbleConfig,
+                            profileCircleConfig: profileCircleConfig,
+                            swipeToReplyConfig: widget.swipeToReplyConfig,
+                            repliedMessageConfig: widget.repliedMessageConfig,
+                            slideAnimation: _slideAnimation,
+                            onLongPress: (yCoordinate, xCoordinate) =>
+                                widget.onChatBubbleLongPress(
+                                  yCoordinate,
+                                  xCoordinate,
+                                  message,
+                                ),
+                            onSwipe: widget.assignReplyMessage,
+                            shouldHighlight: state == message.id,
+                            onReplyTap: widget
+                                .repliedMessageConfig
+                                ?.repliedMsgAutoScrollConfig
+                                .enableScrollToRepliedMsg ??
+                                false
+                                ? (replyId) => _onReplyTap(replyId, snapshot.data?.map((e) => e.value).toList())
+                                : null,
+                          );
+                        },
                       );
                     },
                   );

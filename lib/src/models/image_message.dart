@@ -55,6 +55,27 @@ class ImageMessageConfiguration {
     this.margin,
     this.borderRadius,
   });
+
+  ImageMessageConfiguration copyWith({
+    ShareIconConfiguration? shareIconConfig,
+    void Function(BuildContext, AssetModel)? onTap,
+    double? height,
+    double? width,
+    EdgeInsetsGeometry? padding,
+    EdgeInsetsGeometry? margin,
+    BorderRadius? borderRadius,
+  }) {
+    return ImageMessageConfiguration(
+      shareIconConfig: shareIconConfig ?? this.shareIconConfig,
+      onTap: onTap ?? this.onTap,
+      height: height ?? this.height,
+      width: width ?? this.width,
+      padding: padding ?? this.padding,
+      margin: margin ?? this.margin,
+      borderRadius: borderRadius ?? this.borderRadius,
+    );
+  }
+
 }
 
 class ShareIconConfiguration {

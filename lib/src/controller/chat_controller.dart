@@ -69,11 +69,15 @@ class ChatController {
       _downloadAndDecryptMessageAsset;
 
   Future downloadAndDecryptMessageAsset(Message message) async {
+
+    updateMessageList([message.copyWith(
+        assets: message.assets
+            .map((e) => e.copyWith(isDownloading: true, isUploading: false))
+            .toList())]);
     final newAssets = await _downloadAndDecryptMessageAsset(message);
     updateMessageList([
       message.copyWith(
-        assets: newAssets,
-        // assetDownloadRequired: newAssets.isEmpty
+        assets: newAssets
       )
     ]);
   }
@@ -87,7 +91,8 @@ class ChatController {
     required this.chatUsers,
     required this.onReactionSet,
     required this.onRemoveReact,
-    required Future<List<AssetModel>> Function(Message message) downloadAndDecryptMessageAsset,
+    required Future<List<AssetModel>> Function(Message message)
+        downloadAndDecryptMessageAsset,
     required this.currentUser,
   }) : _downloadAndDecryptMessageAsset = downloadAndDecryptMessageAsset;
 

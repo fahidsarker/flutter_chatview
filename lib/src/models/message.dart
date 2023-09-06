@@ -23,7 +23,7 @@ import 'package:chatview/chatview.dart';
 import 'package:chatview/src/models/asset.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-
+import 'package:collection/collection.dart';
 abstract class Message {
   /// Provides id
   final String id;
@@ -78,6 +78,9 @@ abstract class Message {
 
   bool get assetDownloadRequired => assets.any((e) => e.assetDownloadRequired);
 
+  bool get isDownloading => assets.any((e) => e.isDownloading);
+  bool get isUploading => assets.any((e) => e.isUploading);
+
   Message({
     required this.id,
     required this.message,
@@ -96,7 +99,7 @@ abstract class Message {
         reactions = reactions ?? Reactions(id, []);
 
   String get uniqueSignature {
-    return '$id${status.name}${reactions.reactions.map((e) => '${e.userID}${e.reaction}')}';
+    return '$id${status.name}${reactions.reactions.map((e) => '${e.userID}${e.reaction}')}${assets.map((e) => e.signature)}';
   }
 
   int get assetCount => assets.length;
@@ -108,6 +111,19 @@ abstract class Message {
         Reactions? reactions,
       MessageStatus? status});
 
+  bool get _sameAssets {
+    if (assets.length != assets.length) {
+      return false;
+    }
+    for (var i = 0; i < assets.length; i++) {
+      if (assets[i] != assets[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -115,12 +131,12 @@ abstract class Message {
           runtimeType == other.runtimeType &&
           id == other.id &&
           message == other.message &&
-          createdAt == other.createdAt &&
+          createdAt.isAtSameMomentAs(other.createdAt) &&
           sendBy == other.sendBy &&
           replyMessage == other.replyMessage &&
           reactions == other.reactions &&
           status == other.status &&
-          // voiceMessageDuration == other.voiceMessageDuration &&
+          const ListEquality().equals(assets, other.assets) &&
           unsent == other.unsent &&
           readAt == other.readAt;
 
@@ -133,7 +149,7 @@ abstract class Message {
       replyMessage.hashCode ^
       reactions.hashCode ^
       status.hashCode ^
-      // voiceMessageDuration.hashCode ^
+      assets.hashCode ^
       unsent.hashCode ^
       readAt.hashCode;
 

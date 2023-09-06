@@ -41,4 +41,10 @@ dev_dependencies:
   flutter_lints: ^2.0.1
 
 flutter:
+  fonts:
+    - family: UiIcons
+      fonts:
+        - asset: lib/icon_font/ui_icons.ttf
+  assets:
+    - assets/multi_media.png
 

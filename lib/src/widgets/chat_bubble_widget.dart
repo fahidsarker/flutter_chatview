@@ -133,6 +133,7 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
   Widget build(BuildContext context) {
     // Get user from id.
     final messagedUser = chatController?.getUserFromId(widget.message.sendBy);
+    debugPrint('ChatBubbleWidget build');
     return AbsorbPointer(
       absorbing: widget.message.unsent,
       child: Stack(
@@ -314,6 +315,8 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
                   .repliedMessageWidgetBuilder!(widget.message.replyMessage)
               : ReplyMessageWidget(
                   message: widget.message,
+                  messageConfiguration: widget.messageConfig,
+                  chatBubbleConfig: widget.chatBubbleConfig?.outgoingChatBubbleConfig,
                   repliedMessageConfig: widget.repliedMessageConfig,
                   onTap: () => widget.onReplyTap
                       ?.call(widget.message.replyMessage.messageId),
