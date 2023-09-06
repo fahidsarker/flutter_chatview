@@ -39,45 +39,45 @@ class CompoundMessageView extends StatelessWidget {
       // onTap: () => imageMessageConfig?.onTap?.call(context, (forReply? message.replyMessage.assets : message.assets)[1]),
       child: ValueListenableBuilder<bool>(
         valueListenable: lockNotifier,
-        builder: (_, isLocked, __) => Stack(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(_SPACING),
-              margin: imageMessageConfig?.margin ??
-                  EdgeInsets.only(
-                    top: 6,
-                    right: isMessageBySender ? 6 : 0,
-                    left: isMessageBySender ? 0 : 6,
-                    bottom: message.reactions.reactions.isNotEmpty ? 15 : 0,
-                  ),
-              height: _totalHeight,
-              width: _totalWidth,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: _backGround.withOpacity(0.1)),
-              child: _buildCompoundView(
-                  context,
-                  isLocked
-                      ? message.copyWith(
-                          assets: message.assets
-                              .map((e) =>
-                                  e.copyWith(assetDownloadRequired: true))
-                              .toList())
-                      : message),
-            ),
-            if (!forReply && message.reactions.reactions.isNotEmpty)
-              ReactionWidget(
-                isMessageBySender: isMessageBySender,
-                reaction: message.reactions,
-                messageReactionConfig: messageReactionConfig,
+        builder: (_, isLocked, __) {
+          var assets = forReply ? message.replyMessage.assets : message.assets;
+          if (isLocked){
+            assets = assets.map((e) => e.copyWith(assetDownloadRequired: true)).toList();
+          }
+          return Stack(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(_SPACING),
+                margin: imageMessageConfig?.margin ??
+                    EdgeInsets.only(
+                      top: 6,
+                      right: isMessageBySender ? 6 : 0,
+                      left: isMessageBySender ? 0 : 6,
+                      bottom: message.reactions.reactions.isNotEmpty ? 15 : 0,
+                    ),
+                height: _totalHeight,
+                width: _totalWidth,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: _backGround.withOpacity(0.1)),
+                child: _buildCompoundView(
+                    context,
+                    assets),
               ),
-          ],
-        ),
+              if (!forReply && message.reactions.reactions.isNotEmpty)
+                ReactionWidget(
+                  isMessageBySender: isMessageBySender,
+                  reaction: message.reactions,
+                  messageReactionConfig: messageReactionConfig,
+                ),
+            ],
+          );
+        },
       ),
     );
   }
 
-  Widget _buildCompoundView(BuildContext context, Message message) {
+  Widget _buildCompoundView(BuildContext context, List<AssetModel> assets) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -85,38 +85,21 @@ class CompoundMessageView extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildAsset(context,
-                (forReply ? message.replyMessage.assets : message.assets)[0]),
-            if ((forReply
-                    ? message.replyMessage.assets.length
-                    : message.assetCount) >
-                1)
-              _buildAsset(context,
-                  (forReply ? message.replyMessage.assets : message.assets)[1]),
+            _buildAsset(context, assets[0]),
+            if (assets.length > 1)
+              _buildAsset(context, assets[1]),
           ],
         ),
-        if ((forReply
-                ? message.replyMessage.assets.length
-                : message.assetCount) >
-            2)
+        if (assets.length > 2)
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildAsset(context,
-                  (forReply ? message.replyMessage.assets : message.assets)[2]),
-              if ((forReply
-                      ? message.replyMessage.assets.length
-                      : message.assetCount) >
-                  3)
-                if ((forReply
-                        ? message.replyMessage.assets.length
-                        : message.assetCount) ==
-                    4)
+              _buildAsset(context, assets[2]),
+              if (assets.length > 3)
+                if (assets.length == 4)
                   _buildAsset(
                       context,
-                      (forReply
-                          ? message.replyMessage.assets
-                          : message.assets)[3])
+                      assets[3])
                 else
                   Stack(
                     children: [
@@ -124,15 +107,13 @@ class CompoundMessageView extends StatelessWidget {
                           opacity: 0.5,
                           child: _buildAsset(
                               context,
-                              (forReply
-                                  ? message.replyMessage.assets
-                                  : message.assets)[3])),
+                              assets[3])),
                       SizedBox(
                         height: _componentHeight,
                         width: _componentWidth,
                         child: Center(
                           child: Text(
-                              '+${(forReply ? message.replyMessage.assets.length : message.assetCount) - 3}',
+                              '+${assets.length - 3}',
                               style: ((isMessageBySender
                                           ? outgoingChatBubbleConfig?.textStyle
                                           : inComingChatBubbleConfig

@@ -45,12 +45,15 @@ class ImageMessageView extends StatefulWidget {
     this.highlightScale = 1.2,
     required this.censoredNotifier,
     this.messageConfiguration,
+    this.forReply = false,
   }) : super(key: key);
 
   final ValueNotifier<bool> censoredNotifier;
 
   /// Provides message instance of chat.
   final Message message;
+
+  final bool forReply;
 
   /// Represents current message is sent by current user.
   final bool isMessageBySender;
@@ -74,7 +77,7 @@ class ImageMessageView extends StatefulWidget {
 }
 
 class _ImageMessageViewState extends State<ImageMessageView> {
-  AssetModel get imageAsset => widget.message.assets[0];
+  AssetModel get imageAsset => widget.forReply ? widget.message.replyMessage.assets[0] : widget.message.assets[0];
 
   String get imageUrl => imageAsset.url;
 
