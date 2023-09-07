@@ -1,9 +1,11 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:chatview/chatview.dart';
 import 'package:chatview/src/widgets/censored.dart';
 import 'package:chatview/src/widgets/reaction_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:video_thumbnail/video_thumbnail.dart' as vt;
 
 class VideoPlayerThumbnail extends StatelessWidget {
@@ -16,7 +18,7 @@ class VideoPlayerThumbnail extends StatelessWidget {
   final ValueNotifier<bool> censoredNotifier;
   final MessageConfiguration? messageConfiguration;
 
-  const VideoPlayerThumbnail({
+  VideoPlayerThumbnail({
     Key? key,
     required this.message,
     required this.isMessageBySender,
@@ -29,12 +31,24 @@ class VideoPlayerThumbnail extends StatelessWidget {
   }) : super(key: key);
 
   Future<Uint8List?> _getThumbnailData() async {
-    return await vt.VideoThumbnail.thumbnailData(
+    final asset = forReply ? message.replyMessage.assets[0] : message.assets[0];
+    final docPath = await getApplicationDocumentsDirectory();
+    final thumbCachePath = '${docPath.path}/thumb_${asset.id}.jpg';
+    final thumbCacheFile = File(thumbCachePath);
+    if (await thumbCacheFile.exists()) {
+      return await thumbCacheFile.readAsBytes();
+    }
+    final thumb = await vt.VideoThumbnail.thumbnailData(
       video:
           forReply ? message.replyMessage.assets[0].url : message.assets[0].url,
       imageFormat: vt.ImageFormat.JPEG,
       quality: 50,
     );
+    if (thumb != null) {
+      thumbCacheFile.writeAsBytes(thumb);
+    }
+
+    return thumb;
   }
 
   @override
@@ -51,8 +65,9 @@ class VideoPlayerThumbnail extends StatelessWidget {
               height: height,
               width: width,
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  image: thumbnailImage!),
+                borderRadius: BorderRadius.circular(8),
+                image: thumbnailImage!,
+              ),
             )
           : Stack(
               children: [
@@ -120,6 +135,7 @@ class VideoPlayerThumbnail extends StatelessWidget {
                                         width: width,
                                         height: height,
                                         decoration: BoxDecoration(
+                                          color: Colors.black,
                                             borderRadius:
                                                 BorderRadius.circular(8),
                                             image: DecorationImage(
@@ -135,16 +151,16 @@ class VideoPlayerThumbnail extends StatelessWidget {
                                       width: width,
                                     );
                                   }()),
-                                  if (!v)...[
+                                  if (!v) ...[
                                     Container(
                                       decoration: BoxDecoration(
                                         color: Colors.white,
-                                        borderRadius: BorderRadius.circular(800),
+                                        borderRadius:
+                                            BorderRadius.circular(800),
                                       ),
                                       width: 48,
                                       height: 48,
                                     ),
-
                                     const Icon(
                                       Icons.play_circle,
                                       size: 48,

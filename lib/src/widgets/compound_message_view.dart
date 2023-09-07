@@ -91,6 +91,11 @@ class CompoundMessageView extends StatelessWidget {
           ],
         ),
         if (assets.length > 2)
+          if (assets.length == 3)
+            _buildAsset(
+                context,
+                assets[2])
+        else
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

@@ -77,7 +77,9 @@ class ImageMessageView extends StatefulWidget {
 }
 
 class _ImageMessageViewState extends State<ImageMessageView> {
-  AssetModel get imageAsset => widget.forReply ? widget.message.replyMessage.assets[0] : widget.message.assets[0];
+  AssetModel get imageAsset => widget.forReply
+      ? widget.message.replyMessage.assets[0]
+      : widget.message.assets[0];
 
   String get imageUrl => imageAsset.url;
 
@@ -167,7 +169,11 @@ class _ImageMessageViewState extends State<ImageMessageView> {
                         return value
                             ? (lockedImage == null
                                     ? null
-                                    : Image(image: lockedImage,)) ??
+                                    : Container(
+                                        color: Color.fromRGBO(172, 186, 185, 1),
+                                        child: Image(
+                                          image: lockedImage,
+                                        ))) ??
                                 Censored(
                                   type: MessageType.image,
                                   height: height,

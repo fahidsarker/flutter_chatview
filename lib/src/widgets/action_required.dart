@@ -1,9 +1,13 @@
+import 'dart:io';
 import 'dart:math';
 
+import 'package:chatview/src/widgets/compound_message_view.dart';
+import 'package:chatview/src/widgets/video_player_thumbnail.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../chatview.dart';
+import 'censored.dart';
 
 class ActionRequired extends StatelessWidget {
   final double height;
@@ -40,7 +44,8 @@ class ActionRequired extends StatelessWidget {
         children: [
           _displayableChild,
           IconButton(
-            onPressed: () => controller!.downloadAndDecryptMessageAsset(message),
+            onPressed: () =>
+                controller!.downloadAndDecryptMessageAsset(message),
             icon: Icon(
               (message.isUploading) ? Icons.upload : Icons.download,
               color: messageConfiguration?.toDownloadIcon ?? Colors.black,
@@ -63,16 +68,7 @@ class ActionRequired extends StatelessWidget {
 
   Widget get _displayableChild {
     if (message.assetDownloadRequired || message.isDownloading) {
-      return Opacity(
-        opacity: 0.1,
-        child: message.assets.length > 1
-            ? _compoundAssetWidget
-            : Icon(
-                _icon,
-                size: min(height, width) * 0.8,
-                color: messageConfiguration?.toDownloadIcon ?? Colors.black,
-              ),
-      );
+      return Opacity(opacity: 0.1, child: _icon);
     }
 
     if (message.isUploading) {
@@ -85,15 +81,66 @@ class ActionRequired extends StatelessWidget {
     return childBuilder();
   }
 
-  IconData get _icon {
-    if (message.assets.isEmpty) {
-      return Icons.question_mark_sharp;
+  Widget get _icon {
+    if (message.messageType.isImage) {
+      final asset = message.assets[0];
+      AssetImage? image = asset.assetDownloadRequired ? messageConfiguration?.getAssetIcon?.call('photo') : null;
+      if (image == null && asset.assetDownloadRequired) {
+        return Censored(
+          height: ImageMessageView.thumbnailHeight,
+          width: ImageMessageView.thumbnailWidth,
+          messageConfiguration: messageConfiguration,
+          type: asset.type,
+        );
+      }
+      return Container(
+        height: ImageMessageView.thumbnailHeight,
+        width: ImageMessageView.thumbnailWidth,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          image: DecorationImage(
+            image: (image as ImageProvider?) ?? FileImage(File(asset.url)),
+            fit: BoxFit.fitWidth,
+          ),
+        ),
+      );
     }
 
-    return message.assets[0].type.icon;
-  }
+    if (message.messageType.isVideo) {
+      final asset = message.assets[0];
+      AssetImage? image = asset.assetDownloadRequired
+          ? messageConfiguration?.getAssetIcon?.call('video')
+          : null;
+      if (image == null && asset.assetDownloadRequired) {
+        return Censored(
+          height: ImageMessageView.thumbnailHeight,
+          width: ImageMessageView.thumbnailWidth,
+          messageConfiguration: messageConfiguration,
+          type: asset.type,
+        );
+      }
+      return VideoPlayerThumbnail(
+        message: message,
+        isMessageBySender: isMessageBySender,
+        censoredNotifier: ValueNotifier(false),
+        thumbnailImage: image == null
+            ? null
+            : DecorationImage(
+                image: image,
+                fit: BoxFit.fitWidth,
+              ),
+      );
+    }
 
-  Widget get _compoundAssetWidget {
-    return Text('Compound!');
+    if (message.messageType.isCompound) {
+      return CompoundMessageView(
+        message: message,
+        isMessageBySender: isMessageBySender,
+        lockNotifier: ValueNotifier(false),
+        messageConfiguration: messageConfiguration,
+      );
+    }
+
+    return Icon(Icons.question_mark_sharp);
   }
 }
